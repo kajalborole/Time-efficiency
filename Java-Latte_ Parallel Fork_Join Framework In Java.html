@@ -1,0 +1,2380 @@
+<!DOCTYPE html>
+<!-- saved from url=(0103)http://java-latte.blogspot.in/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html -->
+<html class="v2" dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:b="http://www.google.com/2005/gml/b" xmlns:data="http://www.google.com/2005/gml/data" xmlns:expr="http://www.google.com/2005/gml/expr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/3213516723-css_bundle_v2.css" rel="stylesheet" type="text/css">
+<meta content="width=1100" name="viewport">
+
+<meta content="blogger" name="generator">
+<link href="http://java-latte.blogspot.in/favicon.ico" rel="icon" type="image/x-icon">
+<link href="http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html" rel="canonical">
+<link rel="alternate" type="application/atom+xml" title="Java-Latte - Atom" href="http://java-latte.blogspot.com/feeds/posts/default">
+<link rel="alternate" type="application/rss+xml" title="Java-Latte - RSS" href="http://java-latte.blogspot.com/feeds/posts/default?alt=rss">
+<link rel="service.post" type="application/atom+xml" title="Java-Latte - Atom" href="https://www.blogger.com/feeds/5855689509747625696/posts/default">
+
+<link rel="alternate" type="application/atom+xml" title="Java-Latte - Atom" href="http://java-latte.blogspot.com/feeds/2580782112341030743/comments/default">
+<!--[if IE]><script type="text/javascript" src="https://www.blogger.com/static/v1/jsbin/771816573-ieretrofit.js"></script>
+<![endif]-->
+<link href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/360e2996666f354fdcc81efaead85212.jpg" rel="image_src">
+<meta content="http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html" property="og:url">
+<meta content="Parallel Fork/Join Framework In Java " property="og:title">
+<meta content="  Multicore processors are now widespread across server, desktop, and laptop hardware even on smaller devices such as small-phones and table..." property="og:description">
+<meta content="http://4.bp.blogspot.com/-KalwxIiNv58/U15G4PY21GI/AAAAAAAAFWg/gmuKJE3WA7w/w1200-h630-p-k-no-nu/360e2996666f354fdcc81efaead85212.jpg" property="og:image">
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {} })(); </script> <![endif]-->
+<title>Java-Latte: Parallel Fork/Join Framework In Java </title>
+<style type="text/css">@font-face{font-family:'Crafty Girls';font-style:normal;font-weight:400;src:local('Crafty Girls Regular'),local('CraftyGirls-Regular'),url(//fonts.gstatic.com/s/craftygirls/v7/0Sv8UWFFdhQmesHL32H8o-gdm0LZdjqr5-oayXSOefg.woff2)format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215;}@font-face{font-family:'Cantarell';font-style:normal;font-weight:700;src:local('Cantarell Bold'),local('Cantarell-Bold'),url(//fonts.gstatic.com/s/cantarell/v7/Yir4ZDsCn4g1kWopdg-ehOgdm0LZdjqr5-oayXSOefg.woff2)format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215;}</style>
+<style id="page-skin-1" type="text/css"><!--
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Awesome Inc.
+Designer: Tina Chen
+URL:      tinachen.org
+----------------------------------------------- */
+
+/* Content
+----------------------------------------------- */
+body {
+font: normal normal 13px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #000000;
+background: #000000 url(//themes.googleusercontent.com/image?id=1au0Ex-nW8qgAN9nqocWIoftRd4qJt8epMq8FgrMfnzoKWDYFCOMvYJ5M2-f6ZhHjz8it) no-repeat fixed top center /* Credit: hdoddema (http://www.istockphoto.com/googleimages.php?id=357703&platform=blogger) */;
+}
+html body .content-outer {
+min-width: 0;
+max-width: 100%;
+width: 100%;
+}
+a:link {
+text-decoration: none;
+color: #183963;
+}
+a:visited {
+text-decoration: none;
+color: #000000;
+}
+a:hover {
+text-decoration: underline;
+color: #183963;
+}
+.body-fauxcolumn-outer .cap-top {
+position: absolute;
+z-index: 1;
+height: 276px;
+width: 100%;
+background: transparent none repeat-x scroll top left;
+_background-image: none;
+}
+/* Columns
+----------------------------------------------- */
+.content-inner {
+padding: 0;
+}
+.header-inner .section {
+margin: 0 16px;
+}
+.tabs-inner .section {
+margin: 0 16px;
+}
+.main-inner {
+padding-top: 30px;
+}
+.main-inner .column-center-inner,
+.main-inner .column-left-inner,
+.main-inner .column-right-inner {
+padding: 0 5px;
+}
+*+html body .main-inner .column-center-inner {
+margin-top: -30px;
+}
+#layout .main-inner .column-center-inner {
+margin-top: 0;
+}
+/* Header
+----------------------------------------------- */
+.header-outer {
+margin: 0 0 0 0;
+background: transparent none repeat scroll 0 0;
+}
+.Header h1 {
+font: normal bold 40px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #000000;
+text-shadow: 0 0 -1px #000000;
+}
+.Header h1 a {
+color: #000000;
+}
+.Header .description {
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #000000;
+}
+.header-inner .Header .titlewrapper,
+.header-inner .Header .descriptionwrapper {
+padding-left: 0;
+padding-right: 0;
+margin-bottom: 0;
+}
+.header-inner .Header .titlewrapper {
+padding-top: 22px;
+}
+/* Tabs
+----------------------------------------------- */
+.tabs-outer {
+overflow: hidden;
+position: relative;
+background: #ffffff url(//www.blogblog.com/1kt/awesomeinc/tabs_gradient_light.png) repeat scroll 0 0;
+}
+#layout .tabs-outer {
+overflow: visible;
+}
+.tabs-cap-top, .tabs-cap-bottom {
+position: absolute;
+width: 100%;
+border-top: 1px solid #ffffff;
+}
+.tabs-cap-bottom {
+bottom: 0;
+}
+.tabs-inner .widget li a {
+display: inline-block;
+margin: 0;
+padding: .6em 1.5em;
+font: normal bold 14px Georgia, Utopia, 'Palatino Linotype', Palatino, serif;
+color: #357fde;
+border-top: 1px solid #ffffff;
+border-bottom: 1px solid #ffffff;
+border-left: 1px solid #ffffff;
+height: 16px;
+line-height: 16px;
+}
+.tabs-inner .widget li:last-child a {
+border-right: 1px solid #ffffff;
+}
+.tabs-inner .widget li.selected a, .tabs-inner .widget li a:hover {
+background: #559424 url(//www.blogblog.com/1kt/awesomeinc/tabs_gradient_light.png) repeat-x scroll 0 -100px;
+color: #ffffff;
+}
+/* Headings
+----------------------------------------------- */
+h2 {
+font: normal bold 14px Crafty Girls;
+color: #000000;
+}
+/* Widgets
+----------------------------------------------- */
+.main-inner .section {
+margin: 0 27px;
+padding: 0;
+}
+.main-inner .column-left-outer,
+.main-inner .column-right-outer {
+margin-top: 0;
+}
+#layout .main-inner .column-left-outer,
+#layout .main-inner .column-right-outer {
+margin-top: 0;
+}
+.main-inner .column-left-inner,
+.main-inner .column-right-inner {
+background: transparent none repeat 0 0;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+#layout .main-inner .column-left-inner,
+#layout .main-inner .column-right-inner {
+margin-top: 0;
+}
+.sidebar .widget {
+font: normal normal 14px 'Trebuchet MS', Trebuchet, sans-serif;
+color: #357fde;
+}
+.sidebar .widget a:link {
+color: #183963;
+}
+.sidebar .widget a:visited {
+color: #000000;
+}
+.sidebar .widget a:hover {
+color: #183963;
+}
+.sidebar .widget h2 {
+text-shadow: 0 0 -1px #000000;
+}
+.main-inner .widget {
+background-color: #ffffff;
+border: 1px solid #ffffff;
+padding: 0 15px 15px;
+margin: 20px -16px;
+-moz-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+.main-inner .widget h2 {
+margin: 0 -15px;
+padding: .6em 15px .5em;
+border-bottom: 1px solid #ffffff;
+}
+.footer-inner .widget h2 {
+padding: 0 0 .4em;
+border-bottom: 1px solid #ffffff;
+}
+.main-inner .widget h2 + div, .footer-inner .widget h2 + div {
+border-top: 1px solid #ffffff;
+padding-top: 8px;
+}
+.main-inner .widget .widget-content {
+margin: 0 -15px;
+padding: 7px 15px 0;
+}
+.main-inner .widget ul, .main-inner .widget #ArchiveList ul.flat {
+margin: -8px -15px 0;
+padding: 0;
+list-style: none;
+}
+.main-inner .widget #ArchiveList {
+margin: -8px 0 0;
+}
+.main-inner .widget ul li, .main-inner .widget #ArchiveList ul.flat li {
+padding: .5em 15px;
+text-indent: 0;
+color: #622394;
+border-top: 1px solid #ffffff;
+border-bottom: 1px solid #ffffff;
+}
+.main-inner .widget #ArchiveList ul li {
+padding-top: .25em;
+padding-bottom: .25em;
+}
+.main-inner .widget ul li:first-child, .main-inner .widget #ArchiveList ul.flat li:first-child {
+border-top: none;
+}
+.main-inner .widget ul li:last-child, .main-inner .widget #ArchiveList ul.flat li:last-child {
+border-bottom: none;
+}
+.post-body {
+position: relative;
+}
+.main-inner .widget .post-body ul {
+padding: 0 2.5em;
+margin: .5em 0;
+list-style: disc;
+}
+.main-inner .widget .post-body ul li {
+padding: 0.25em 0;
+margin-bottom: .25em;
+color: #000000;
+border: none;
+}
+.footer-inner .widget ul {
+padding: 0;
+list-style: none;
+}
+.widget .zippy {
+color: #622394;
+}
+/* Posts
+----------------------------------------------- */
+body .main-inner .Blog {
+padding: 0;
+margin-bottom: 1em;
+background-color: transparent;
+border: none;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+.main-inner .section:last-child .Blog:last-child {
+padding: 0;
+margin-bottom: 1em;
+}
+.main-inner .widget h2.date-header {
+margin: 0 -15px 1px;
+padding: 0 0 0 0;
+font: normal normal 14px Georgia, Utopia, 'Palatino Linotype', Palatino, serif;
+color: #357fde;
+background: transparent none no-repeat scroll top left;
+border-top: 0 solid #ffffff;
+border-bottom: 1px solid #ffffff;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+position: static;
+bottom: 100%;
+right: 15px;
+text-shadow: 0 0 -1px #000000;
+}
+.main-inner .widget h2.date-header span {
+font: normal normal 14px Georgia, Utopia, 'Palatino Linotype', Palatino, serif;
+display: block;
+padding: .5em 15px;
+border-left: 0 solid #ffffff;
+border-right: 0 solid #ffffff;
+}
+.date-outer {
+position: relative;
+margin: 30px 0 20px;
+padding: 0 15px;
+background-color: #ffffff;
+border: 1px solid #ffffff;
+-moz-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+.date-outer:first-child {
+margin-top: 0;
+}
+.date-outer:last-child {
+margin-bottom: 20px;
+-moz-border-radius-bottomleft: 0;
+-moz-border-radius-bottomright: 0;
+-webkit-border-bottom-left-radius: 0;
+-webkit-border-bottom-right-radius: 0;
+-goog-ms-border-bottom-left-radius: 0;
+-goog-ms-border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+border-bottom-right-radius: 0;
+}
+.date-posts {
+margin: 0 -15px;
+padding: 0 15px;
+clear: both;
+}
+.post-outer, .inline-ad {
+border-top: 1px solid #ffffff;
+margin: 0 -15px;
+padding: 15px 15px;
+}
+.post-outer {
+padding-bottom: 10px;
+}
+.post-outer:first-child {
+padding-top: 0;
+border-top: none;
+}
+.post-outer:last-child, .inline-ad:last-child {
+border-bottom: none;
+}
+.post-body {
+position: relative;
+}
+.post-body img {
+padding: 8px;
+background: transparent;
+border: 1px solid transparent;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+border-radius: 0;
+}
+h3.post-title, h4 {
+font: normal bold 22px Cantarell;
+color: #000000;
+}
+h3.post-title a {
+font: normal bold 22px Cantarell;
+color: #000000;
+}
+h3.post-title a:hover {
+color: #183963;
+text-decoration: underline;
+}
+.post-header {
+margin: 0 0 1em;
+}
+.post-body {
+line-height: 1.4;
+}
+.post-outer h2 {
+color: #000000;
+}
+.post-footer {
+margin: 1.5em 0 0;
+}
+#blog-pager {
+padding: 15px;
+font-size: 120%;
+background-color: #ffffff;
+border: 1px solid #ffffff;
+-moz-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+-goog-ms-border-top-left-radius: 0;
+-goog-ms-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius-topright: 0;
+margin-top: 1em;
+}
+.blog-feeds, .post-feeds {
+margin: 1em 0;
+text-align: center;
+color: #000000;
+}
+.blog-feeds a, .post-feeds a {
+color: #183963;
+}
+.blog-feeds a:visited, .post-feeds a:visited {
+color: #000000;
+}
+.blog-feeds a:hover, .post-feeds a:hover {
+color: #183963;
+}
+.post-outer .comments {
+margin-top: 2em;
+}
+/* Comments
+----------------------------------------------- */
+.comments .comments-content .icon.blog-author {
+background-repeat: no-repeat;
+background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAAd0SU1FB9sLFwMeCjjhcOMAAAD+SURBVDjLtZSvTgNBEIe/WRRnm3U8RC1neQdsm1zSBIU9VVF1FkUguQQsD9ITmD7ECZIJSE4OZo9stoVjC/zc7ky+zH9hXwVwDpTAWWLrgS3QAe8AZgaAJI5zYAmc8r0G4AHYHQKVwII8PZrZFsBFkeRCABYiMh9BRUhnSkPTNCtVXYXURi1FpBDgArj8QU1eVXUzfnjv7yP7kwu1mYrkWlU33vs1QNu2qU8pwN0UpKoqokjWwCztrMuBhEhmh8bD5UDqur75asbcX0BGUB9/HAMB+r32hznJgXy2v0sGLBcyAJ1EK3LFcbo1s91JeLwAbwGYu7TP/3ZGfnXYPgAVNngtqatUNgAAAABJRU5ErkJggg==);
+}
+.comments .comments-content .loadmore a {
+border-top: 1px solid #ffffff;
+border-bottom: 1px solid #ffffff;
+}
+.comments .continue {
+border-top: 2px solid #ffffff;
+}
+/* Footer
+----------------------------------------------- */
+.footer-outer {
+margin: -20px 0 -1px;
+padding: 20px 0 0;
+color: #000000;
+overflow: hidden;
+}
+.footer-fauxborder-left {
+border-top: 1px solid #ffffff;
+background: #ffffff none repeat scroll 0 0;
+-moz-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+margin: 0 -20px;
+}
+/* Mobile
+----------------------------------------------- */
+body.mobile {
+background-size: auto;
+}
+.mobile .body-fauxcolumn-outer {
+background: transparent none repeat scroll top left;
+}
+*+html body.mobile .main-inner .column-center-inner {
+margin-top: 0;
+}
+.mobile .main-inner .widget {
+padding: 0 0 15px;
+}
+.mobile .main-inner .widget h2 + div,
+.mobile .footer-inner .widget h2 + div {
+border-top: none;
+padding-top: 0;
+}
+.mobile .footer-inner .widget h2 {
+padding: 0.5em 0;
+border-bottom: none;
+}
+.mobile .main-inner .widget .widget-content {
+margin: 0;
+padding: 7px 0 0;
+}
+.mobile .main-inner .widget ul,
+.mobile .main-inner .widget #ArchiveList ul.flat {
+margin: 0 -15px 0;
+}
+.mobile .main-inner .widget h2.date-header {
+right: 0;
+}
+.mobile .date-header span {
+padding: 0.4em 0;
+}
+.mobile .date-outer:first-child {
+margin-bottom: 0;
+border: 1px solid #ffffff;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+-goog-ms-border-top-left-radius: 0;
+-goog-ms-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+}
+.mobile .date-outer {
+border-color: #ffffff;
+border-width: 0 1px 1px;
+}
+.mobile .date-outer:last-child {
+margin-bottom: 0;
+}
+.mobile .main-inner {
+padding: 0;
+}
+.mobile .header-inner .section {
+margin: 0;
+}
+.mobile .post-outer, .mobile .inline-ad {
+padding: 5px 0;
+}
+.mobile .tabs-inner .section {
+margin: 0 10px;
+}
+.mobile .main-inner .widget h2 {
+margin: 0;
+padding: 0;
+}
+.mobile .main-inner .widget h2.date-header span {
+padding: 0;
+}
+.mobile .main-inner .widget .widget-content {
+margin: 0;
+padding: 7px 0 0;
+}
+.mobile #blog-pager {
+border: 1px solid transparent;
+background: #ffffff none repeat scroll 0 0;
+}
+.mobile .main-inner .column-left-inner,
+.mobile .main-inner .column-right-inner {
+background: transparent none repeat 0 0;
+-moz-box-shadow: none;
+-webkit-box-shadow: none;
+-goog-ms-box-shadow: none;
+box-shadow: none;
+}
+.mobile .date-posts {
+margin: 0;
+padding: 0;
+}
+.mobile .footer-fauxborder-left {
+margin: 0;
+border-top: inherit;
+}
+.mobile .main-inner .section:last-child .Blog:last-child {
+margin-bottom: 0;
+}
+.mobile-index-contents {
+color: #000000;
+}
+.mobile .mobile-link-button {
+background: #183963 url(//www.blogblog.com/1kt/awesomeinc/tabs_gradient_light.png) repeat scroll 0 0;
+}
+.mobile-link-button a:link, .mobile-link-button a:visited {
+color: #ffffff;
+}
+.mobile .tabs-inner .PageList .widget-content {
+background: transparent;
+border-top: 1px solid;
+border-color: #ffffff;
+color: #357fde;
+}
+.mobile .tabs-inner .PageList .widget-content .pagelist-arrow {
+border-left: 1px solid #ffffff;
+}
+
+--></style>
+<style id="template-skin-1" type="text/css"><!--
+body {
+min-width: 1330px;
+}
+.content-outer, .content-fauxcolumn-outer, .region-inner {
+min-width: 1330px;
+max-width: 1330px;
+_width: 1330px;
+}
+.main-inner .columns {
+padding-left: 0px;
+padding-right: 350px;
+}
+.main-inner .fauxcolumn-center-outer {
+left: 0px;
+right: 350px;
+/* IE6 does not respect left and right together */
+_width: expression(this.parentNode.offsetWidth -
+parseInt("0px") -
+parseInt("350px") + 'px');
+}
+.main-inner .fauxcolumn-left-outer {
+width: 0px;
+}
+.main-inner .fauxcolumn-right-outer {
+width: 350px;
+}
+.main-inner .column-left-outer {
+width: 0px;
+right: 100%;
+margin-left: -0px;
+}
+.main-inner .column-right-outer {
+width: 350px;
+margin-right: -350px;
+}
+#layout {
+min-width: 0;
+}
+#layout .content-outer {
+min-width: 0;
+width: 800px;
+}
+#layout .region-inner {
+min-width: 0;
+width: auto;
+}
+--></style>
+<style>
+.header-left{
+display: inline-block;
+float: left;
+}
+#header-right {
+display:inline-block;
+float:center;
+</style>
+<link href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/authorization.css" media="all" onload="if(media!=&#39;all&#39;)media=&#39;all&#39;" rel="stylesheet"><noscript>&lt;link href='https://www.blogger.com/dyn-css/authorization.css?targetBlogID=5855689509747625696&amp;amp;zx=3325142d-a37f-4575-aedb-772defb01768' rel='stylesheet'/&gt;</noscript>
+<script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/rules-p-aRAyv335QWAKb.js"></script><script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/quant.js" async="" type="text/javascript"></script><script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/cb=gapi.loaded_4" async=""></script><script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/cb=gapi.loaded_3" async=""></script><script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/cb=gapi.loaded_2" async=""></script><script type="text/javascript" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/google_top_exp.js"></script><script type="text/javascript" charset="UTF-8" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/ice.js" async=""></script><style>.gc-bubbleDefault{background-color:transparent !important;text-align:left;padding:0 !important;margin:0 !important;border:0 !important;table-layout:auto !important}.gc-reset{background-color:transparent !important;border:0 !important;padding:0 !important;margin:0 !important;text-align:left}.pls-bubbleTop{border-bottom:1px solid #ccc !important}.pls-topTail,.pls-vertShimLeft,.pls-contentLeft{background-image:url(//ssl.gstatic.com/s2/oz/images/stars/po/bubblev1/border_3.gif) !important}.pls-topTail{background-repeat:repeat-x !important;background-position:bottom !important}.pls-vertShim{background-color:#fff !important;text-align:right}.tbl-grey .pls-vertShim{background-color:#f5f5f5 !important}.pls-vertShimLeft{background-repeat:repeat-y !important;background-position:right !important;height:4px}.pls-vertShimRight{height:4px}.pls-confirm-container .pls-vertShim{background-color:#fff3c2 !important}.pls-contentWrap{background-color:#fff !important;position:relative !important;vertical-align:top}.pls-contentLeft{background-repeat:repeat-y;background-position:right;vertical-align:top}.pls-dropRight{background-image:url(//ssl.gstatic.com/s2/oz/images/stars/po/bubblev1/bubbleDropR_3.png) !important;background-repeat:repeat-y !important;vertical-align:top}.pls-vert,.pls-tailleft,.pls-dropTR .pls-dropBR,.pls-dropBL,.pls-vert img{vertical-align:top}.pls-dropBottom{background-image:url(//ssl.gstatic.com/s2/oz/images/stars/po/bubblev1/bubbleDropB_3.png) !important;background-repeat:repeat-x !important;width:100%;vertical-align:top}.pls-topLeft{background:inherit !important;text-align:right;vertical-align:bottom}.pls-topRight{background:inherit !important;text-align:left;vertical-align:bottom}.pls-bottomLeft{background:inherit !important;text-align:right}.pls-bottomRight{background:inherit !important;text-align:left;vertical-align:top}.pls-tailtop,.pls-tailright,.pls-tailbottom,.pls-tailleft{display:none;position:relative}.pls-tailbottom,.pls-tailtop,.pls-tailright,.pls-tailleft,.pls-dropTR,.pls-dropBR,.pls-dropBL{background-image:url(//ssl.gstatic.com/s2/oz/images/stars/po/bubblev1/bubbleSprite_3.png) !important;background-repeat:no-repeat}.tbl-grey .pls-tailbottom,.tbl-grey .pls-tailtop,.tbl-grey .pls-tailright,.tbl-grey .pls-tailleft,.tbl-grey .pls-dropTR,.tbl-grey .pls-dropBR,.tbl-grey .pls-dropBL{background-image:url(//ssl.gstatic.com/s2/oz/images/stars/po/bubblev1/bubbleSprite-grey.png) !important}.pls-tailbottom{background-position:-23px 0}.pls-confirm-container .pls-tailbottom{background-position:-23px -10px}.pls-tailtop{background-position:-19px -20px}.pls-tailright{background-position:0 0}.pls-tailleft{background-position:-10px 0}.pls-tailtop{vertical-align:top}.gc-bubbleDefault td{line-height:0;font-size:0}.pls-topLeft img,.pls-topRight img,.pls-tailbottom{vertical-align:bottom}.pls-bottomLeft img,.bubbleDropTR,.pls-dropBottomL img,.pls-dropBottom img,.pls-dropBottomR img,.pls-bottomLeft{vertical-align:top}.pls-dropTR{background-position:0 -22px}.pls-dropBR{background-position:0 -27px}.pls-dropBL{background-position:0 -16px}.pls-spacertop,.pls-spacerright,.pls-spacerbottom,.pls-spacerleft{position:static !important}.pls-spinner{bottom:0;position:absolute;left:0;margin:auto;right:0;top:0} </style><script async="" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/lazy.min.js"></script><script type="text/javascript" charset="UTF-8" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/gsd"></script><style type="text/css"></style><script type="text/javascript" charset="UTF-8" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/getads.htm"></script><script type="text/javascript" charset="UTF-8" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/getads(1).htm"></script><script type="text/javascript" charset="UTF-8" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/getads(2).htm"></script></head>
+<body class=" variant-light">
+<div class="navbar section" id="navbar"><div class="widget Navbar" data-version="1" id="Navbar1"><script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/cb=gapi.loaded_1" async=""></script><script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript">
+    function setAttributeOnload(object, attribute, val) {
+      if(window.addEventListener) {
+        window.addEventListener('load',
+          function(){ object[attribute] = val; }, false);
+      } else {
+        window.attachEvent('onload', function(){ object[attribute] = val; });
+      }
+    }
+  </script>
+<div id="navbar-iframe-container"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" tabindex="0" vspace="0" width="100%" id="navbar-iframe" name="navbar-iframe" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/navbar.html"></iframe></div>
+<script type="text/javascript" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/plusone.js" gapi_processed="true"></script>
+<script type="text/javascript">
+      gapi.load("gapi.iframes:gapi.iframes.style.bubble", function() {
+        if (gapi.iframes && gapi.iframes.getContext) {
+          gapi.iframes.getContext().openChild({
+              url: 'https://www.blogger.com/navbar.g?targetBlogID\x3d5855689509747625696\x26blogName\x3dJava-Latte\x26publishMode\x3dPUBLISH_MODE_BLOGSPOT\x26navbarType\x3dLIGHT\x26layoutType\x3dLAYOUTS\x26searchRoot\x3dhttp://java-latte.blogspot.com/search\x26blogLocale\x3den\x26v\x3d2\x26homepageUrl\x3dhttp://java-latte.blogspot.com/\x26targetPostID\x3d2580782112341030743\x26blogPostOrPageUrl\x3dhttp://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html\x26vt\x3d-6685248380728879737',
+              where: document.getElementById("navbar-iframe-container"),
+              id: "navbar-iframe"
+          });
+        }
+      });
+    </script><script type="text/javascript">
+(function() {
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = '//pagead2.googlesyndication.com/pagead/js/google_top_exp.js';
+var head = document.getElementsByTagName('head')[0];
+if (head) {
+head.appendChild(script);
+}})();
+</script>
+</div></div>
+<div class="body-fauxcolumns">
+<div class="fauxcolumn-outer body-fauxcolumn-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<div class="content">
+<div class="content-fauxcolumns">
+<div class="fauxcolumn-outer content-fauxcolumn-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<div class="content-outer">
+<div class="content-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left content-fauxborder-left">
+<div class="fauxborder-right content-fauxborder-right"></div>
+<div class="content-inner">
+<header>
+<div class="header-outer">
+<div class="header-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left header-fauxborder-left">
+<div class="fauxborder-right header-fauxborder-right"></div>
+<div class="region-inner header-inner">
+<div class="header header-left section" id="header"><div class="widget Header" data-version="1" id="Header1">
+<div id="header-inner">
+<a href="http://java-latte.blogspot.in/" style="display: block">
+<img alt="Java-Latte" height="122px; " id="Header1_headerimg" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/logo.png" style="display: block" width="459px; ">
+</a>
+</div>
+</div></div>
+</div>
+</div>
+<div class="header-right crosscol section" id="header-right"><div class="widget HTML" data-version="1" id="HTML9">
+<div class="widget-content">
+<script type="text/javascript" src="http://ads.qadserve.com/t?id=224842c3-1b7e-4db1-ab17-7b5fa44f4eab&amp;size=468x60"></script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML9&amp;action=editWidget&amp;sectionId=header-right" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML9&quot;));" target="configHTML9" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+<div style="clear:both;"></div>
+<div class="header-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</header>
+<div class="tabs-outer">
+<div class="tabs-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left tabs-fauxborder-left">
+<div class="fauxborder-right tabs-fauxborder-right"></div>
+<div class="region-inner tabs-inner">
+<div class="tabs section" id="crosscol"><div class="widget PageList" data-version="1" id="PageList1">
+<h2>Pages</h2>
+<div class="widget-content">
+<ul>
+<li>
+<a href="http://java-latte.blogspot.in/">Home</a>
+</li>
+<li>
+<a href="http://java-latte.blogspot.in/p/java-8.html">Java 8</a>
+</li>
+<li>
+<a href="http://java-latte.blogspot.in/p/coding.html">Algorithm Puzzles</a>
+</li>
+<li>
+<a href="http://java-latte.blogspot.in/p/concurrency.html">Concurrency/Multi-threading</a>
+</li>
+<li>
+<a href="http://java-latte.blogspot.in/p/java-puzzles.html">Java Puzzles</a>
+</li>
+</ul>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=PageList&amp;widgetId=PageList1&amp;action=editWidget&amp;sectionId=crosscol" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;PageList1&quot;));" target="configPageList1" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div></div>
+<div class="tabs no-items section" id="crosscol-overflow"></div>
+</div>
+</div>
+<div class="tabs-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="main-outer">
+<div class="main-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left main-fauxborder-left">
+<div class="fauxborder-right main-fauxborder-right"></div>
+<div class="region-inner main-inner">
+<div class="columns fauxcolumns">
+<div class="fauxcolumn-outer fauxcolumn-center-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="fauxcolumn-outer fauxcolumn-left-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="fauxcolumn-outer fauxcolumn-right-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<!-- corrects IE6 width calculation -->
+<div class="columns-inner">
+<div class="column-center-outer">
+<div class="column-center-inner">
+<div class="main section" id="main"><div class="widget Blog" data-version="1" id="Blog1">
+<div class="blog-posts hfeed">
+
+          <div class="date-outer">
+        
+<h2 class="date-header"><span>Monday, April 28, 2014</span></h2>
+
+          <div class="date-posts">
+        
+<div class="post-outer">
+<div class="post hentry uncustomized-post-template" itemprop="blogPost" itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+<meta content="http://4.bp.blogspot.com/-KalwxIiNv58/U15G4PY21GI/AAAAAAAAFWg/gmuKJE3WA7w/s1600/360e2996666f354fdcc81efaead85212.jpg" itemprop="image_url">
+<meta content="5855689509747625696" itemprop="blogId">
+<meta content="2580782112341030743" itemprop="postId">
+<a name="2580782112341030743"></a>
+<h3 class="post-title entry-title" itemprop="name">
+Parallel Fork/Join Framework In Java 
+</h3>
+<div class="post-header">
+<div class="post-header-line-1"></div>
+</div>
+<div class="post-body entry-content" id="post-body-2580782112341030743" itemprop="description articleBody">
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<span style="font-family: Trebuchet MS, sans-serif;"></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">Multicore processors are now widespread across server, desktop, and laptop hardware even on smaller devices such as&nbsp;small-phones&nbsp;and tablets. They <span id="IL_AD7" class="IL_AD">open</span> new possibilities for concurrent programming because the threads of a process can be executed on <span style="color: blue;">several cores in parallel</span>. One important technique for achieving maximal performance in applications is the ability to <span style="color: blue;">split intensive tasks</span> into chunks that can be performed in parallel to maximize the use of computational power.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">In this post, we'll starts with a brief recall of starting with the low-level mechanisms of dealing with concurrent programming, then rich primitives <span id="IL_AD8" class="IL_AD">added</span> by the java.util.concurrent packages before starting with fork/join tasks.</span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/360e2996666f354fdcc81efaead85212.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/360e2996666f354fdcc81efaead85212.jpg"></a></div>
+<br>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: large;"><b>Concurrent Programming with plain old threads</b></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">As we already know, we can write threads through the <span style="color: blue;">java.lang.<a href="http://java-latte.blogspot.in/2013/08/basic-of-thread-in-java.html" target="_blank">Thread</a></span> class and the <span style="color: blue;">java.lang.<a href="http://java-latte.blogspot.in/2013/08/basic-of-thread-in-java.html" target="_blank">Runnable</a></span> interface, then making sure they behave in a correct and consisted way with respect to shared mutable objects and avoiding incorrect read/write operations while not creating <a href="http://java-latte.blogspot.in/2013/08/basic-of-thread-in-java.html" target="_blank">deadlocks</a> type of problems.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">Here is an example of basic thread manipulation :</span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/plain_old_thread_fork_join_in_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/plain_old_thread_fork_join_in_java_latte.png"></a></div>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">All the code in this example does is create a thread that <span id="IL_AD1" class="IL_AD">calculate</span> the sum. The main thread waits for created (child) thread to complete by calling join().&nbsp;</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">Directly manipulating threads this way is fine for simple examples, but with concurrent programming, such code can quickly <span style="color: blue;">become error-prone</span>, especially when several threads need to cooperate to perform a larger task. In such cases, their control flow needs to be coordinated.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><b><br></b></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>For example</b>, the completion of a thread’s execution might depend on other threads having completed their execution. This requirement can be addressed through shared state and condition queues, but you still have to use synchronization by using <a href="http://java-latte.blogspot.in/2013/08/thread-communication-with-wait-notify.html" target="_blank"><span style="color: blue;">java.lang.Object.notify()</span> </a>and <span style="color: blue;"><a href="http://java-latte.blogspot.in/2013/08/thread-communication-with-wait-notify.html" target="_blank">java.lang.Object.wait()</a></span> on shared-state objects, which is easy to get wrong.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">Finally, a common <span style="color: blue;">pitfall</span> is to use <span style="color: blue;">synchronize and provide mutual</span> exclusion over large pieces of code or even whole methods. While this approach leads to thread-safe code, it usually yields poor performance due to the limited parallelism that is induced by exclusion being in effect too long.</span><br>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+
+<script src="http://ads.qadserve.com/t?id=6f454008-ee41-4dd9-a058-44ce031f7a68&amp;size=728x90" type="text/javascript"></script>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: large;"><b>Rich Primitives with the java.util.concurrent Packages</b></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">This packages family offers the following concurrent programming primitives, <span id="IL_AD6" class="IL_AD">collections</span>, and features:</span><br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;"><a href="http://java-latte.blogspot.in/2014/03/executor-executorservice-threadpool-and.html" target="_blank">Executors</a></span>, which are an enhancement over plain old threads because they are abstracted from thread pool management. They execute tasks similar to those passed to threads. Several implementations are provided with thread pooling and scheduling strategies. Also, execution results can be fetched both in a synchronous and asynchronous manner. <a href="http://java-latte.blogspot.in/2014/03/executor-executorservice-threadpool-and.html" target="_blank">Check it here</a></span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">Thread-safe queues</span> allow for passing data between concurrent tasks</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Rich synchronization patterns that go beyond the mutual exclusion provided by low-level synchronized blocks in Java. These patterns comprise common idioms such as <span style="color: blue;"><a href="http://java-latte.blogspot.in/2013/09/semaphore-in-java-concurrency.html" target="_blank">semaphores</a></span> or <a href="http://java-latte.blogspot.in/2014/04/Semaphore-CountDownLatch-CyclicBarrier-Phaser-Exchanger-in-Java.html" target="_blank"><span style="color: blue;">synchronization barriers.</span></a></span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Efficient, concurrent data collections (maps, lists, and sets) that often yield superior performance in multithreaded contexts through the use of <span style="color: blue;">copy-on-write</span> and <span style="color: blue;">fine-grained locks.</span></span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">Atomic variables </span>that shield developers from the need to perform synchronized access by themselves.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">A wide range of locks</span> that go beyond the lock/notify capabilities offered by intrinsic locks, for example, support for re-entrance, read/write locking, timeouts, or poll-based locking attempts.</span></li>
+</ul>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;">As an example, we try to find the sum from 1 to 1_000_000 using java.util.concurrent features</span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_using_callable_java_latte_part1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_using_callable_java_latte_part1.png"></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_using_callable_java_latte_part2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_using_callable_java_latte_part2.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">This example uses an executor that dispatches work over two threads. The <span style="color: blue;">ExecutorService.invokeAll() </span><span id="IL_AD4" class="IL_AD">method</span> takes a collection of <span style="color: blue;"><a href="http://java-latte.blogspot.in/2014/03/executor-executorservice-threadpool-and.html" target="_blank">Callable</a></span> instances and waits for the completion of all of them before returning. It returns a list of Future objects, which all represent the “<span style="color: blue;">future</span>” result of the computation. If we were to work in an asynchronous fashion, we could test each Future object to <span id="IL_AD2" class="IL_AD">check</span> whether its corresponding Callable has finished its work and check whether it threw an exception, and we could even cancel it.&nbsp;</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>By contrast</b>, when using plain old threads, you must <span style="color: blue;">encode cancellation logic</span> through a shared mutable Boolean and cripple the code with periodic checks over this Boolean. Because <span style="color: blue;">invokeAll()</span> is blocking, we can directly iterate over the Future instances and fetch their computed sums.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">Also note that an <span style="color: blue;">executor service must be shut down</span>. If it is not shut down, the Java Virtual Machine will not exit when the main method does, because there will still be active threads around.</span><br>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: large;"><b>Fork/Join Tasks Overview</b></span><br>
+<span style="color: blue; font-family: &#39;Trebuchet MS&#39;, sans-serif;">Executors</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;"> are a big step forward compared to plain old threads because executors ease the management of concurrent tasks. Some types of <span id="IL_AD12" class="IL_AD">algorithms</span> exist that require tasks to create subtasks and communicate with each other to complete. Those are the "</span><span style="color: blue; font-family: &#39;Trebuchet MS&#39;, sans-serif;">divide and conquer</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">" algorithms.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">An easy example would be a huge array of integers for which you would like to compute the sum. Given that <span id="IL_AD9" class="IL_AD">addition</span> is commutative, one may split the array into smaller portions where concurrent threads compute partial sums. The partial sums can then be added to compute the total sum. Because threads can operate independently on different areas of an array for this <span id="IL_AD11" class="IL_AD">algorithm</span>, you will see a clear performance <span style="color: blue;">boost on multicore architectures compared</span> to a <span style="color: blue;">mono-thread algorithm</span> that would iterate over each integer in the array.</span><br>
+<br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/array_image.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/array_image.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">Solving the problem above with executors is easy: Divide the array into the number n of <span id="IL_AD5" class="IL_AD">available</span> physical processing units, create Callable instances to compute each partial sum, submit them to an executor managing a pool of n threads, and collect the result to compute the final sum.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">The<span style="color: red;"> problem with the executors</span> for implementing divide and conquer algorithms is not related to creating subtasks, because a Callable is free to submit a new subtask to its executor and wait for its result in a synchronous or asynchronous fashion. <span style="color: red;">The issue is that of parallelism</span>: When a Callable waits for the result of another Callable, it is put in a <span style="color: blue;">waiting state</span>, thus wasting an opportunity to handle another Callable queued for execution.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">The fork/join framework added to the java.util.concurrent package in Java SE 7 fills that gap. The Java SE 5 and Java SE 6 versions of java.util.concurrent helped in dealing with concurrency, and the additions in <span style="color: blue;">Java SE 7 help with parallelism</span>.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: large;"><b>Parallel Fork/Join Framework</b></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">The fork/join framework is an <span style="color: blue;">implementation of the ExecutorService</span> interface that helps you <span style="color: blue;">take <span id="IL_AD10" class="IL_AD">advantage</span> of multiple processors</span>. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to <span style="color: blue;">enhance</span> the performance of your <span id="IL_AD3" class="IL_AD">application</span>.</span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;">The Fork/Join framework in the java.util.concurrent package helps simplify writing parallelized code.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">This framework is very useful for modeling <span style="color: blue;">divide-and-conquer</span> problems. This approach is suitable for tasks that can be divided recursively and computed on a smaller scale; the computed results are then combined.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">The framework is an implementation of the ExecutorService interface and provides an easy-to-use concurrent platform in order to exploit multiple processors.</span></li>
+</ul>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;"><b>Term useful for this framework</b></span></div>
+<br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;"><b><span style="color: blue;">Forking</span></b> : Dividing the task into smaller tasks is forking.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><b><span style="color: blue;">Joining</span></b> : Merging the results from the smaller tasks is joining</span></li>
+</ul>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;">The center of the fork/join framework is the <span style="color: blue;"><a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ForkJoinPool.html" target="_blank">ForkJoinPool</a></span> class, an extension of <span style="color: blue;"><a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/AbstractExecutorService.html" target="_blank">AbstractExecutorService</a></span>. ForkJoinPool implements the<span style="color: red;"> core work-stealing algorithm</span> and can execute <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ForkJoinTask.html" target="_blank">ForkJoinTasks</a>. Both ForkJoinPool and ForkJoinTasks are classes.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">The <span style="color: blue;">key</span> is to recursively subdivide the task into smaller chunks that can be processed by separate threads.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+
+<script type="text/javascript" src="http://ads.qadserve.com/t?id=6f454008-ee41-4dd9-a058-44ce031f7a68&amp;size=728x90"></script>
+<br>
+
+
+<span style="color: blue; font-family: Trebuchet MS, sans-serif; font-size: large;"><b>The Fork/Join algorithm is designed as follows:</b></span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;">split tasks</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">fork the tasks</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">join the tasks</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">compose the results</span></li>
+</ul>
+<br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;"><b>pseudo-code to be written here</b></span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;"></span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">doRecursiveTask(input){</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">&nbsp; if( task is small enough to handled by a thread){</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">&nbsp; &nbsp; &nbsp; compute the small task;</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">&nbsp; &nbsp; &nbsp; if there is result to return, then do so</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">&nbsp; }else{</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">&nbsp; &nbsp; &nbsp; divide the task i.e, fork() into two parts</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">&nbsp; &nbsp; &nbsp; call compute on first task, join on second task, combine both results and return</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">&nbsp; }</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">}</span><br>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: large;"><b>Additions for Supporting Parallelism</b></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">The core addition is a new <span style="color: blue;">ForkJoinPool</span> executor that is dedicated to running instances implementing <span style="color: blue;">ForkJoinTask</span>. &nbsp;ForkJoinTask objects support the <span style="color: blue;">creation of subtasks plus waiting for the subtasks to complete</span>. With those clear semantics, the executor is able to dispatch tasks among its internal threads pool by “<span style="color: blue;">stealing</span>” jobs when a task is waiting for another task to complete and there are pending tasks to be run.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><u>ForkJoinTask objects feature two specific methods:</u></span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;">The<b> fork() </b>method allows a ForkJoinTask to be planned for <span style="color: blue;">asynchronous</span> execution. This allows a new ForkJoinTask to be launched from an existing one..</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">In turn, the<b> join()</b> method allows a ForkJoinTask to wait for the completion of another one.</span></li>
+</ul>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">Cooperation among tasks happens through fork() and join().</span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/forkJoinTask.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/forkJoinTask.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><u>There are two types of ForkJoinTask specializations:</u></span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;">Instances of <span style="color: blue;">RecursiveAction</span> represent executions that do not yield a return value.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">In contrast, instances of <span style="color: blue;">RecursiveTask</span> yield return values.</span></li>
+</ul>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: large;"><b>Useful Classes of the Fork/Join</b></span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;"><a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ForkJoinPool.html" target="_blank">ForkJoinPool</a></span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ForkJoinTask.html" target="_blank">ForkJoinTask</a></span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">RecursiveTask</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/RecursiveAction.html" target="_blank">RecursiveAction</a></span></li>
+</ul>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><b><br></b></span></div>
+<div>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif; font-size: large;"><b>ForkJoinPool</b></span></div>
+<div>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">ForkJoinPool is the most important class in the Fork/Join framework. It is a thread pool for running </span><span style="color: blue; font-family: &#39;Trebuchet MS&#39;, sans-serif;">fork/join tasks</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;"> - it executes an instance of ForkJoinTask. It executes tasks and manages their&nbsp;</span><span style="color: blue; font-family: &#39;Trebuchet MS&#39;, sans-serif;">life-cycle</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">.</span></div>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;">A ForkJoinPool provides the entry point for submissions from <span style="color: blue;">non-ForkJoinTask</span> clients, as well as management and monitoring operations.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">A ForkJoinPool is constructed with a given <span style="color: blue;">target parallelism level</span>; by default, <span style="color: blue;">equal to the number of available processors</span>. The pool attempts to maintain enough active (or available) threads by dynamically adding, suspending, or resuming internal worker threads, even if some tasks are stalled waiting to join others.&nbsp;However, no such adjustments are guaranteed in the face of blocked IO or other unmanaged synchronization.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>In addition</b> to <span style="color: blue;">execution</span> and&nbsp;<span style="color: blue;">life-cycle</span>&nbsp;control methods, this class provides status check methods (for example <span style="color: blue;">getStealCount()</span>) that are intended to aid in d<span style="color: blue;">eveloping, tuning, and monitoring</span> fork/join applications. Also, method toString() returns indications of pool state in a convenient form for informal monitoring.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">non-ForkJoinTask clients means tasks which are not already engaged in fork/join computations in the current pool.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">As is the case with other ExecutorServices, there are <span style="color: blue;">three main task execution methods</span> summarized in the following table.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>Call from non-fork/join clients</b></span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">execute(ForkJoinTask)</span> Arrange async execution</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">invoke(ForkJoinTask)</span> Await and obtain result</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">submit(ForkJoinTask)</span> &nbsp;Arrange exec and obtain Future</span></li>
+</ul>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>Call from within fork/join computations</b></span></div>
+<br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">ForkJoinTask.fork()</span> Arrange async execution</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">ForkJoinTask.invoke()</span> Await and obtain result</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">ForkJoinTask.fork()</span> (ForkJoinTasks are Futures) Arrange exec and obtain Future</span></li>
+</ul>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;">ForkJoinPool uses threads in <span style="color: blue;">daemon mode</span>, there is typically<span style="color: blue;"> no need to explicitly shutdown</span> such a pool upon program exit. &nbsp; implementation restricts the maximum number of running threads to <b>32767</b>. Attempts to create pools with greater than the maximum number result in <span style="color: red;">IllegalArgumentException</span></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif; font-size: large;"><b>ForkJoinTask</b></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">This is the <span style="color: blue;">Abstract base class for tasks</span> that run within a ForkJoinPool. A ForkJoinTask is a thread-like entity that is much lighter weight than a normal thread-like entity representing a task that defines methods such as fork() and join().</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><u>When it comes into picture</u></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">A "main" ForkJoinTask begins execution when <span style="color: blue;">submitted to a ForkJoinPool.</span> Once started, it will usually in turn start other subtasks. As indicated by the name of this class, many programs using ForkJoinTask employ only methods fork() and join(), or derivatives such as <span style="color: blue;">invokeAll</span>. However, this class also provides a number of other methods that can come into play in advanced usages, as well as extension mechanics that allow support of new forms of fork/join processing.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b><span style="color: blue; font-size: large;">RecursiveTask</span>&lt;V&gt;</b> is a task that can run in a ForkJoinPool; the compute() method returns a value of type V. It inherits from ForkJoinTask.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b><span style="color: blue; font-size: large;">RecursiveAction</span></b> is a task that can run in a ForkJoinPool; its compute() method performs the actual computation steps in the task. It is similar to RecursiveTask, but does not return a value.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+
+
+<script type="text/javascript" src="http://ads.qadserve.com/t?id=f1616090-6791-4962-af43-7fb6b6c898f5&amp;size=468x60"></script>
+
+<br>
+
+
+
+<span style="color: blue; font-family: Trebuchet MS, sans-serif; font-size: large;"><b>How to use Fork/Join Framework</b></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">Here are the steps to use the framework:</span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;">First, check whether the problem is<span style="color: blue;"> suitable for the Fork/Join framework or not</span>. Remember: the Fork/Join framework is not suitable for all kinds of tasks. This framework is suitable if your problem fits this description:</span></li>
+<ul>
+<li><span style="font-family: Trebuchet MS, sans-serif;">The problem can be designed as a<span style="color: blue;"> recursive task</span> where the task can be subdivided into smaller units and the results can be combined together.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">The subdivided tasks are <span style="color: blue;">independent</span> and can be<span style="color: blue;"> computed separately</span> without the need for communication between the tasks when computation is in process. (Of course, after the computation is over, you will need to join them together.)</span></li>
+</ul>
+<li><span style="font-family: Trebuchet MS, sans-serif;">If the problem you want to solve can be modeled recursively, then define a task class that extends either <span style="color: blue;">RecursiveTask</span> or <span style="color: blue;">RecursiveAction</span>. If a task returns a result, extend from RecursiveTask; otherwise extend from RecursiveAction.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Override the <span style="color: blue;">compute()</span> method in the newly defined task class. The compute() method actually performs the task if the task is small enough to be executed; or split the task into subtasks and invoke them. <span style="color: blue;">The subtasks can be invoked either by invokeAll() or fork() method </span>(use fork() when the subtask returns a value). <span style="color: blue;">Use the join() method to get the computed results</span> (if you used fork() method earlier).</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Merge the results, if computed from the subtasks.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Then instantiate <span style="color: blue;">ForkJoinPool</span>, create an instance of the task class, and s<span style="color: blue;">tart the execution</span> of the task using the invoke() method on the ForkJoinPool instance.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">That’s it—you are done.</span></li>
+</ul>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: large;"><b>How Fork/Join Worker Thread Pools works</b></span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">Fork/Join uses per-thread queuing with work-stealing</span><br>
+<br>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;">Normally best to have <span style="color: blue;">one worker thread per CPU</span>, as design is robust you can have more workers than CPU's</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Each new task is queued in current <span style="color: blue;">worker threads's dequeue</span>. Addition to this, there is global queue for new tasks from clients.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Workers run tasks from their <span style="color: blue;">own dequeues</span> in stack based LIFO manner.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">If a worker is idle, it steals a task in <span style="color: blue;">FIFO</span> order from another thread's dequeue&nbsp;</span></li>
+</ul>
+<br>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>Example 1 </b>:&nbsp;<span style="color: blue;">This class illustrates how we can compute sum of 1..N numbers using fork/join framework. The range of numbers are divided into half until the range can be handled by a thread. Once the range summation completes, the result gets summed up together.</span></span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_n_fork_join_part1_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_n_fork_join_part1_java_latte.png"></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_n_fork_join_part2_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Sum_n_fork_join_part2_java_latte.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">In the compute() method, you decide whether to compute the sum for the range or subdivide the task further using following condition:</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">(to - from) &lt;= N/NUM_THREADS)</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">You use this "threshold" value in this computation. In other words, if the range of values is within the <span style="color: blue;">threshold that can be handled by a task</span>, then you perform the computation; otherwise you recursively <span style="color: blue;">divide the task into two parts</span>. You use a simple for loop to find the sum of the values in that range. In the other case, you divide the range similarly to how you divide the range in a binary search algorithm: for the range from .. to, you find the mid-point and create two sub-ranges from .. mid and mid + 1 .. to. <span style="color: blue;">Once you call fork(), you wait for the first task to complete the computation of the sum and spawn another task for the second half of the computation</span>.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">In this program, you arbitrarily assumed the number of threads to use was ten threads. This was to simplify the logic of this program. A better approach to decide the threshold value is to divide the data size length by the number of <span style="color: blue;">available processors</span> In other words,</span><br>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">threshold value = (data length size) / (number of available processors);</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">How do you programmatically get the number of available processors? For that you can use the method <span style="color: blue;">Runtime.getRuntime().availableProcessors();</span></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>Example 2</b> :&nbsp;<span style="color: blue;">This example illustrates how we can search a key within N numbers using fork/join framework. The range of numbers are divided into half until the range can be handled by a thread.</span></span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Search_from_array_fork_join_part1_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Search_from_array_fork_join_part1_java_latte.png"></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Search_from_array_fork_join_part2_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Search_from_array_fork_join_part2_java_latte.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">The key difference between above two programs you used RecursiveAction in the latter instead of RecursiveTask. You made several changes to extend the task class from RecursiveAction. The first change is that the compute() method is not returning anything. Another change is that you used the invokeAll() method to submit the subtasks to execute. Another obvious change is that you carried out search in the compute() method instead of summation in earlier case</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>Example 3</b> : <span style="color: blue;">As a more concrete simple example, the following task increments each element of an array</span>:</span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Increment_from_array_fork_join_part1_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Increment_from_array_fork_join_part1_java_latte.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Increment_from_array_fork_join_part2_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Increment_from_array_fork_join_part2_java_latte.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>Example 4</b> :<span style="color: blue;"> In this example, we'll find the max element using fork/join</span></span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Max_from_array_fork_join_part1_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Max_from_array_fork_join_part1_java_latte.png"></a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Max_from_array_fork_join_part2_java_latte.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/Max_from_array_fork_join_part2_java_latte.png"></a></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="color: blue; font-family: Trebuchet MS, sans-serif;">How ForkJoinPool differs ExecutorService?</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">As with any ExecutorService, the fork/join framework distributes tasks to worker threads in a thread pool. The fork/join framework is distinct because it uses a work-stealing algorithm. Worker threads that run out of things to do can steal tasks from other threads that are still busy.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="color: red; font-family: Trebuchet MS, sans-serif; font-size: large;"><b>Points to Remember</b></span><br>
+<div style="text-align: left;">
+</div>
+<ul style="text-align: left;">
+<li><span style="font-family: Trebuchet MS, sans-serif;">It is possible to achieve what the Fork/Join framework offers using basic concurrency constructs such as start() and join(). However, the Fork/Join framework abstracts many lower-level details and thus is easier to use. In addition, it is much more efficient to use the Fork/Join framework instead handling the threads at lower levels. Furthermore, using ForkJoinPool efficiently manages the threads and performs much better than conventional threads pools. For all these reasons, you are encouraged to use the Fork/Join framework.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><span style="color: blue;">Each worker thread in the Fork/Join framework has a work queue, which is implemented using a Deque. Each time a new task (or subtask) is created, it is pushed to the head of its own queue. When a task completes a task and executes a join with another task that is not completed yet, it works smart. The thread pops a new task from the head of its queue and starts executing rather than sleeping (in order to wait for another task to complete). In fact, if the queue of a thread is empty, then the thread pops a task from the tail of the queue belonging to another thread</span>. This is nothing but a <b>work-stealing algorithm</b>.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">It looks obvious to call fork() for both the subtasks (if you are splitting in two subtasks) and call join() two times. It is correct—but inefficient. Why? Well, basically you are creating more &nbsp;parallel tasks than are useful. In this case, the original thread will be waiting for the other two tasks to complete, which is inefficient considering task creation cost. That is why you call fork() once and call compute() for the second task.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">The placement of fork() and join() calls are very important. For instance, let’s assume that you place the calls in following order:<br><span style="color: blue;">first.fork();<br>resultFirst = first.join();<br>resultSecond = second.compute();</span><br>This usage is a serial execution of two tasks, since the second task starts executing only after the first is complete. Thus, it is less efficient even than its sequential version since this version also includes cost of the task creation. The take-away: watch your placement of fork/join calls.</span></li>
+</ul>
+<br>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="background-color: white; color: blue; font-family: &#39;Trebuchet MS&#39;, sans-serif; font-size: 13px; line-height: 18px;">If you know anyone who has started learning Java, why not help them out! Just share this post with them.&nbsp;</span><br>
+<span style="background-color: white; color: blue; font-family: &#39;Trebuchet MS&#39;, sans-serif; font-size: 13px; line-height: 18px;">Thanks for studying today!...</span></div>
+<div style="clear: both;"></div>
+</div>
+<div class="post-footer">
+<div class="post-footer-line post-footer-line-1">
+<span class="post-author vcard">
+Posted by
+<span class="fn" itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person">
+<meta content="https://plus.google.com/114569387735242251965" itemprop="url">
+<a class="g-profile" href="https://plus.google.com/114569387735242251965" rel="author" title="author profile" data-gapiscan="true" data-onload="true" data-gapiattached="true">
+<span itemprop="name">Pardeep Kumar</span>
+</a>
+</span>
+</span>
+<span class="post-timestamp">
+at
+<meta content="http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html" itemprop="url">
+<a class="timestamp-link" href="http://java-latte.blogspot.in/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html" rel="bookmark" title="permanent link"><abbr class="published" itemprop="datePublished" title="2014-04-28T17:45:00+05:30">5:45 PM</abbr></a>
+</span>
+<span class="reaction-buttons">
+</span>
+<span class="post-comment-link">
+</span>
+<span class="post-backlinks post-comment-link">
+</span>
+<span class="post-icons">
+<span class="item-control blog-admin pid-1637178512">
+<a href="https://www.blogger.com/post-edit.g?blogID=5855689509747625696&amp;postID=2580782112341030743&amp;from=pencil" title="Edit Post">
+<img alt="" class="icon-action" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_edit_allbkg.gif" width="18">
+</a>
+</span>
+</span>
+<div class="post-share-buttons goog-inline-block">
+<a class="goog-inline-block share-button sb-email" href="https://www.blogger.com/share-post.g?blogID=5855689509747625696&amp;postID=2580782112341030743&amp;target=email" target="_blank" title="Email This"><span class="share-button-link-text">Email This</span></a><a class="goog-inline-block share-button sb-blog" href="https://www.blogger.com/share-post.g?blogID=5855689509747625696&amp;postID=2580782112341030743&amp;target=blog" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=270,width=475&quot;); return false;" target="_blank" title="BlogThis!"><span class="share-button-link-text">BlogThis!</span></a><a class="goog-inline-block share-button sb-twitter" href="https://www.blogger.com/share-post.g?blogID=5855689509747625696&amp;postID=2580782112341030743&amp;target=twitter" target="_blank" title="Share to Twitter"><span class="share-button-link-text">Share to Twitter</span></a><a class="goog-inline-block share-button sb-facebook" href="https://www.blogger.com/share-post.g?blogID=5855689509747625696&amp;postID=2580782112341030743&amp;target=facebook" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=430,width=640&quot;); return false;" target="_blank" title="Share to Facebook"><span class="share-button-link-text">Share to Facebook</span></a><a class="goog-inline-block share-button sb-pinterest" href="https://www.blogger.com/share-post.g?blogID=5855689509747625696&amp;postID=2580782112341030743&amp;target=pinterest" target="_blank" title="Share to Pinterest"><span class="share-button-link-text">Share to Pinterest</span></a><div class="goog-inline-block google-plus-share-container"><div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 32px; height: 20px; background: transparent;"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 32px; margin: 0px; border-style: none; left: 0px; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1511849221836" name="I0_1511849221836" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/fastbutton.html" data-gapiattached="true" title="G+"></iframe></div></div>
+</div>
+</div>
+<div class="post-footer-line post-footer-line-2">
+<span class="post-labels">
+Labels:
+<a href="http://java-latte.blogspot.in/search/label/fork%20join%20example%20in%20java" rel="tag">fork join example in java</a>,
+<a href="http://java-latte.blogspot.in/search/label/Fork%2FJoin%20Framework" rel="tag">Fork/Join Framework</a>,
+<a href="http://java-latte.blogspot.in/search/label/Java%207%20fork%20join" rel="tag">Java 7 fork join</a>,
+<a href="http://java-latte.blogspot.in/search/label/Parallel%20processing%20in%20java" rel="tag">Parallel processing in java</a>
+</span>
+</div>
+<div class="post-footer-line post-footer-line-3">
+<span class="post-location">
+</span>
+</div>
+</div>
+</div>
+<div class="comments" id="comments" il_cc1="2" style="min-height: 1438px;"><input type="hidden" name="IL_IN_TAG" value="1" class="IL_IN_AUTO"><div class="IL_BASE" style="margin: 0px auto; padding: 10px 0px; width: 916px;">  <div id="IL_IN_TAG_LOGO_0" class="IL_BASE" style="float:right; margin-right:15px; margin-top:8px; width:53px; height:12px; cursor:pointer; font-size:1px; ">         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="53px" height="12px" viewBox="0 0 636 144" enable-background="new 0 0 636 144" xml:space="preserve">     <g>            <path id="IL_IN_TAG_LOGO_0_DOT1" fill="#208CE5" d="M16.918,24.865c5.848,0,10.57-4.735,10.57-10.583s-4.722-10.57-10.57-10.57 S6.334,8.434,6.334,14.282S11.07,24.865,16.918,24.865"></path>            <path fill="#003366" d="M88.085,43.784H77.024c-17.149,0-31.181,14.031-31.181,31.182v34.796 c0,0.218,0.016,0.415,0.027,0.618v5.185c0,5.71-4.672,10.382-10.382,10.382h-0.467c-5.71,0-10.382-4.672-10.382-10.382V92.608 h0.015V45.889v-0.025c0-1.124-0.885-2.033-2.01-2.08h-11.49c-1.09,0.047-1.949,0.907-1.986,1.996v46.828h0.04 c-0.015,0.355-0.04,0.707-0.04,1.066v22.246c0,14.031,11.479,25.512,25.511,25.512h1.151c14.031,0,25.511-11.48,25.511-25.512 v-5.466v-4.62v-28.89c0.082-9.872,8.159-17.948,18.031-17.948h6.366c9.871,0,17.948,8.076,18.042,17.948v28.89v4.62v28.873 c0.013,0.023,0.013,0.034,0.013,0.048c0,1.111,0.883,2.008,1.983,2.057h11.505c1.077-0.036,1.936-0.887,1.985-1.973v-27.966v-5.659 V74.966C119.267,57.815,105.234,43.784,88.085,43.784"></path>            <path fill="#003366" d="M155.069,56.972v82.643c-0.072,0.992-0.886,1.78-1.903,1.818h-11.014 c-1.062-0.038-1.912-0.897-1.912-1.962c0-0.024,0-0.048-0.023-0.073V34.456c0.716-17.064,14.923-30.744,32.179-30.744h8.536 c0.025,0,0.038,0.011,0.06,0.011c1.053,0,1.915,0.849,1.974,1.901v11.037c-0.035,1.016-0.85,1.844-1.878,1.889h-8.692 c-9.509,0-17.327,7.75-17.327,17.268v6.301V56.972z"></path>            <path fill="#003366" d="M151.99,59.104h28.873c0.023-0.012,0.034-0.012,0.047-0.012 c1.111,0,2.008-0.884,2.057-1.984V45.604c-0.036-1.078-0.887-1.938-1.973-1.986h-27.965"></path>            <path fill="#003366" d="M276.24,107.925h0.158V76.608c-0.37-18.164-15.248-32.825-33.494-32.825 h-16.756v0.022c-17.875,0.431-32.322,14.924-32.679,32.803h-0.026v31.316c0,18.213,14.601,33.064,32.705,33.496v0.012h16.589h0.021 h0.146C261.304,141.349,276.24,126.354,276.24,107.925 M208.93,107.925L208.93,107.925V77.289c0-9.914,8.096-18.02,18.021-18.02 h15.953c9.946,0,18.02,8.106,18.02,18.02v30.636h-0.167c0,9.949-8.074,18.021-17.999,18.021h-15.807 C217.026,125.946,208.93,117.874,208.93,107.925"></path>            <path fill="#003366" d="M312.844,139.376L312.844,139.376c0,1.064-0.798,1.938-1.829,2.045h-11.816 c-1.027-0.107-1.837-0.98-1.837-2.045h-0.013V5.769h0.013c0-1.135,0.908-2.033,2.031-2.057h11.432 c1.124,0.024,2.019,0.922,2.019,2.057V139.376z"></path>            <path id="IL_IN_TAG_LOGO_0_DOT2" fill="#208CE5" d="M341.662,24.865c5.848,0,10.57-4.735,10.57-10.583s-4.723-10.57-10.57-10.57 s-10.584,4.722-10.584,10.57S335.814,24.865,341.662,24.865"></path>            <path fill="#003366" d="M412.829,43.784h-11.061c-17.149,0-31.181,14.031-31.181,31.182v34.796 c0,0.218,0.016,0.415,0.026,0.618v5.185c0,5.71-4.672,10.382-10.382,10.382h-0.468c-5.71,0-10.382-4.672-10.382-10.382V92.608 h0.016V45.723v-0.025c0-1.123-0.885-2.033-2.01-2.08h-11.49c-1.091,0.047-1.949,0.908-1.986,1.996v46.994h0.04 c-0.015,0.355-0.04,0.707-0.04,1.066v22.246c0,14.031,11.479,25.512,25.512,25.512h1.15c14.031,0,25.512-11.48,25.512-25.512 v-5.466v-4.62v-28.89c0.082-9.872,8.158-17.948,18.029-17.948h6.367c9.871,0,17.947,8.076,18.041,17.948v28.89v4.62v28.873 c0.014,0.023,0.014,0.034,0.014,0.048c0,1.111,0.883,2.008,1.982,2.057h11.506c1.076-0.036,1.936-0.887,1.984-1.973v-27.966v-5.659 V74.966C444.01,57.815,429.979,43.784,412.829,43.784"></path>            <path fill="#003366" d="M480.277,139.376L480.277,139.376V91.735h0.146h9.255l40.656,48.766 c0.599,0.549,1.15,0.906,1.841,0.932h16.073c0.882-0.025,2.869-0.322,1.794-2.056l-0.013-0.024l-47.58-56.777l44.599-36.815 c0.015-0.049,0.015-0.049,0.036-0.073c1.066-1.734-0.886-2.032-1.78-2.069H527.08c-0.621,0.024-1.15,0.324-1.666,0.791 l-36.812,31.075h-8.325V5.769c0-1.135-0.896-2.033-2.02-2.057h-11.422c-1.124,0.024-2.033,0.922-2.033,2.057v133.607 c0,1.064,0.803,1.938,1.844,2.045h11.802C479.476,141.313,480.277,140.44,480.277,139.376"></path>            <path fill="#003366" d="M603.208,84.782H577.99c-6.91-0.114-12.508-5.785-12.508-12.783 c0-6.996,5.598-12.895,12.508-12.895h39.271c1.146,0,2.08-0.959,2.08-2.111v0.191V45.752v-0.037c0-1.164-0.935-2.097-2.08-2.097 H577.99c-15.451,0-28.008,12.73-28.008,28.381c0,15.651,12.557,28.381,28.008,28.27h24.252c6.911,0.111,12.508,5.812,12.508,12.795 c0,6.996-5.597,12.896-12.508,12.896H591.56l0.001-0.014h-28.874c-0.022,0.014-0.034,0.014-0.047,0.014 c-1.11,0-2.007,0.896-2.056,2.01v11.449c0.035,1.092,0.886,1.963,1.973,2.014h0.225h27.74h12.224 c15.209-0.279,27.491-12.9,27.491-28.369C630.236,97.737,618.191,85.202,603.208,84.782"></path>     </g>     </svg>       </div>         <ul id="IL_IN_TAG_LIST_0_0" class="IL_BASE" style="display:block; width:838px; height:19px; text-align:center; padding:0; margin:6px 0 0 0; font-size:0; overflow:hidden;"><li class="IL_BASE" style="display: inline; margin: 0px; padding: 0px; width: auto; float: none; background: none;"><span id="IL_IN_TAG_AD13" class="IL_BASE IL_IN_TAG_AD" style="padding: 0px 15px; font-weight: normal;">Download Pdf</span></li>
+<li class="IL_BASE" style="display: inline; margin: 0px; padding: 0px; width: auto; float: none; background: none;"><span id="IL_IN_TAG_AD14" class="IL_BASE IL_IN_TAG_AD" style="padding: 0px 15px; font-weight: normal;">Physical</span></li>
+<li class="IL_BASE" style="display: inline; margin: 0px; padding: 0px; width: auto; float: none; background: none;"><span id="IL_IN_TAG_AD15" class="IL_BASE IL_IN_TAG_AD" style="padding: 0px 15px; font-weight: normal;">Addressed</span></li>
+<li class="IL_BASE" style="display: inline; margin: 0px; padding: 0px; width: auto; float: none; background: none;"><span id="IL_IN_TAG_AD16" class="IL_BASE IL_IN_TAG_AD" style="padding: 0px 15px; font-weight: normal;">Advantage</span></li>
+<li class="IL_BASE" style="display: inline; margin: 0px; padding: 0px; width: auto; float: none; background: none;"><span id="IL_IN_TAG_AD17" class="IL_BASE IL_IN_TAG_AD" style="padding: 0px 15px; font-weight: normal;">Advantage cat flea</span></li>
+<li class="IL_BASE" style="display: inline; margin: 0px; padding: 0px; width: auto; float: none; background: none;"><span id="IL_IN_TAG_AD18" class="IL_BASE IL_IN_TAG_AD" style="padding: 0px 15px; font-weight: normal;">Advantage flea and tick</span></li>
+</ul></div>
+<a name="comments"></a>
+<h4>2 comments:</h4>
+<div class="comments-content">
+<script async="async" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/comments.js" type="text/javascript"></script>
+<script type="text/javascript">
+    (function() {
+      var items = [{'id': '614132145708335896', 'body': 'Nice post.. Good effort.', 'timestamp': '1404384974522', 'permalink': 'http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html?showComment\x3d1404384974522#c614132145708335896', 'author': {'name': 'Muhammad Tariq Khan', 'avatarUrl': '//lh5.googleusercontent.com/-fBN1kkd3oaI/AAAAAAAAAAI/AAAAAAAAACA/W4hj2ireD58/s35-c/photo.jpg', 'profileUrl': 'https://www.blogger.com/profile/02344761832587168702'}, 'displayTime': 'July 3, 2014 at 4:26 PM', 'deleteclass': 'item-control blog-admin pid-329803340'}, {'id': '7843920479905331854', 'body': 'INTERNATIONAL CONCEPT OF WORK FROM HOME\x3cbr /\x3eWork from home theory is fast gaining popularity because of the freedom and flexibility that comes with it. Since one is not bound by fixed working hours, they can schedule their work at the time when they feel most productive and convenient to them. Women \x26amp; Men benefit a lot from this concept of work since they can balance their home and work perfectly. People mostly find that in this situation, their productivity is higher and stress levels lower. Those who like isolation and a tranquil work environment also tend to prefer this way of working. Today, with the kind of communication networks available, millions of people worldwide are considering this option. \x3cbr /\x3e\x3cbr /\x3eWomen \x26amp; Men who want to be independent but cannot afford to leave their responsibilities at home aside will benefit a lot from this concept of work. It makes it easier to maintain a healthy balance between home and work. The family doesn\x26#39;t get neglected and you can get your work done too. You can thus effectively juggle home responsibilities with your career. Working from home is definitely a viable option but it also needs a lot of hard work and discipline. You have to make a time schedule for yourself and stick to it. There will be a time frame of course for any job you take up and you have to fulfill that project within that time frame. \x3cbr /\x3e\x3cbr /\x3eThere are many things that can be done working from home. A few of them is listed below that will give you a general idea about the benefits of this concept. \x3cbr /\x3e\x3cbr /\x3eBaby-sitting \x3cbr /\x3eThis is the most common and highly preferred job that Women \x26amp; Men like doing. Since in today\x26#39;s competitive world both the parents have to work they need a secure place to leave behind their children who will take care of them and parents can also relax without being worried all the time. In this job you don\x26#39;t require any degree or qualifications. You only have to know how to take care of children. Parents are happy to pay handsome salary and you can also earn a lot without putting too much of an effort.\x3cbr /\x3e\x3cbr /\x3eNursery \x3cbr /\x3eFor those who have a garden or an open space at your disposal and are also interested in gardening can go for this method of earning money. If given proper time and efforts nursery business can flourish very well and you will earn handsomely. But just as all jobs establishing it will be a bit difficult but the end results are outstanding.\x3cbr /\x3e\x3cbr /\x3eFreelance\x3cbr /\x3eFreelance can be in different wings. Either you can be a freelance reporter or a freelance photographer. You can also do designing or be in the advertising field doing project on your own. Being independent and working independently will depend on your field of work and the availability of its worth in the market. If you like doing jewellery designing you can do that at home totally independently. You can also work on freelancing as a marketing executive working from home. Wanna know more, email us on workfromhome.otr214423@gmail.com and we will send you information on how you can actually work as a marketing freelancer.\x3cbr /\x3e\x3cbr /\x3e\x3cbr /\x3eInternet related work \x3cbr /\x3eThis is a very vast field and here sky is the limit. All you need is a computer and Internet facility. Whatever field you are into work at home is perfect match in the software field. You can match your time according to your convenience and complete whatever projects you get. To learn more about how to work from home, contact us today on workfromhome.otr214423@gmail.comand our team will get you started on some excellent work from home projects.\x3cbr /\x3e\x3cbr /\x3e\x3cbr /\x3eDiet food\x3cbr /\x3eSince now a days Women \x26amp; Men are more conscious of the food that they eat hence they prefer to have homemade low cal food and if you can start supplying low cal food to various offices then it will be a very good source of income and not too much of efforts. You can hire a few ladies who will help you out and this can be a good business.\x3cbr /\x3e\x3cbr /\x3eThus think over this concept and go ahead. \x3cbr /\x3e', 'timestamp': '1409987598709', 'permalink': 'http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html?showComment\x3d1409987598709#c7843920479905331854', 'author': {'name': 'otr214423', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/16376109133070654680'}, 'displayTime': 'September 6, 2014 at 12:43 PM', 'deleteclass': 'item-control blog-admin pid-245483770'}];
+      var msgs = {'loadMore': 'Load more...', 'loading': 'Loading...', 'loaded': 'No more!', 'addComment': 'Add comment', 'reply': 'Reply', 'delete': 'Delete'};
+      var config = {'blogId': '5855689509747625696', 'postId': '2580782112341030743', 'feed': 'http://java-latte.blogspot.com/feeds/2580782112341030743/comments/default', 'authorName': 'Pardeep Kumar', 'authorUrl': 'https://www.blogger.com/profile/15415177669352479825', 'baseUri': 'https://www.blogger.com', 'maxThreadDepth': 2};
+
+// <![CDATA[
+      var cursor = null;
+      if (items && items.length > 0) {
+        cursor = parseInt(items[items.length - 1].timestamp) + 1;
+      }
+
+      var bodyFromEntry = function(entry) {
+        if (entry.gd$extendedProperty) {
+          for (var k in entry.gd$extendedProperty) {
+            if (entry.gd$extendedProperty[k].name == 'blogger.contentRemoved') {
+              return '<span class="deleted-comment">' + entry.content.$t + '</span>';
+            }
+          }
+        }
+        return entry.content.$t;
+      }
+
+      var parse = function(data) {
+        cursor = null;
+        var comments = [];
+        if (data && data.feed && data.feed.entry) {
+          for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
+            var comment = {};
+            // comment ID, parsed out of the original id format
+            var id = /blog-(\d+).post-(\d+)/.exec(entry.id.$t);
+            comment.id = id ? id[2] : null;
+            comment.body = bodyFromEntry(entry);
+            comment.timestamp = Date.parse(entry.published.$t) + '';
+            if (entry.author && entry.author.constructor === Array) {
+              var auth = entry.author[0];
+              if (auth) {
+                comment.author = {
+                  name: (auth.name ? auth.name.$t : undefined),
+                  profileUrl: (auth.uri ? auth.uri.$t : undefined),
+                  avatarUrl: (auth.gd$image ? auth.gd$image.src : undefined)
+                };
+              }
+            }
+            if (entry.link) {
+              if (entry.link[2]) {
+                comment.link = comment.permalink = entry.link[2].href;
+              }
+              if (entry.link[3]) {
+                var pid = /.*comments\/default\/(\d+)\?.*/.exec(entry.link[3].href);
+                if (pid && pid[1]) {
+                  comment.parentId = pid[1];
+                }
+              }
+            }
+            comment.deleteclass = 'item-control blog-admin';
+            if (entry.gd$extendedProperty) {
+              for (var k in entry.gd$extendedProperty) {
+                if (entry.gd$extendedProperty[k].name == 'blogger.itemClass') {
+                  comment.deleteclass += ' ' + entry.gd$extendedProperty[k].value;
+                } else if (entry.gd$extendedProperty[k].name == 'blogger.displayTime') {
+                  comment.displayTime = entry.gd$extendedProperty[k].value;
+                }
+              }
+            }
+            comments.push(comment);
+          }
+        }
+        return comments;
+      };
+
+      var paginator = function(callback) {
+        if (hasMore()) {
+          var url = config.feed + '?alt=json&v=2&orderby=published&reverse=false&max-results=50';
+          if (cursor) {
+            url += '&published-min=' + new Date(cursor).toISOString();
+          }
+          window.bloggercomments = function(data) {
+            var parsed = parse(data);
+            cursor = parsed.length < 50 ? null
+                : parseInt(parsed[parsed.length - 1].timestamp) + 1
+            callback(parsed);
+            window.bloggercomments = null;
+          }
+          url += '&callback=bloggercomments';
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = url;
+          document.getElementsByTagName('head')[0].appendChild(script);
+        }
+      };
+      var hasMore = function() {
+        return !!cursor;
+      };
+      var getMeta = function(key, comment) {
+        if ('iswriter' == key) {
+          var matches = !!comment.author
+              && comment.author.name == config.authorName
+              && comment.author.profileUrl == config.authorUrl;
+          return matches ? 'true' : '';
+        } else if ('deletelink' == key) {
+          return config.baseUri + '/delete-comment.g?blogID='
+               + config.blogId + '&postID=' + comment.id;
+        } else if ('deleteclass' == key) {
+          return comment.deleteclass;
+        }
+        return '';
+      };
+
+      var replybox = null;
+      var replyUrlParts = null;
+      var replyParent = undefined;
+
+      var onReply = function(commentId, domId) {
+        if (replybox == null) {
+          // lazily cache replybox, and adjust to suit this style:
+          replybox = document.getElementById('comment-editor');
+          if (replybox != null) {
+            replybox.height = '250px';
+            replybox.style.display = 'block';
+            replyUrlParts = replybox.src.split('#');
+          }
+        }
+        if (replybox && (commentId !== replyParent)) {
+          replybox.src = '';
+          document.getElementById(domId).insertBefore(replybox, null);
+          replybox.src = replyUrlParts[0]
+              + (commentId ? '&parentID=' + commentId : '')
+              + '#' + replyUrlParts[1];
+          replyParent = commentId;
+        }
+      };
+
+      var hash = (window.location.hash || '#').substring(1);
+      var startThread, targetComment;
+      if (/^comment-form_/.test(hash)) {
+        startThread = hash.substring('comment-form_'.length);
+      } else if (/^c[0-9]+$/.test(hash)) {
+        targetComment = hash.substring(1);
+      }
+
+      // Configure commenting API:
+      var configJso = {
+        'maxDepth': config.maxThreadDepth
+      };
+      var provider = {
+        'id': config.postId,
+        'data': items,
+        'loadNext': paginator,
+        'hasMore': hasMore,
+        'getMeta': getMeta,
+        'onReply': onReply,
+        'rendered': true,
+        'initComment': targetComment,
+        'initReplyThread': startThread,
+        'config': configJso,
+        'messages': msgs
+      };
+
+      var render = function() {
+        if (window.goog && window.goog.comments) {
+          var holder = document.getElementById('comment-holder');
+          window.goog.comments.render(holder, provider);
+        }
+      };
+
+      // render now, or queue to render when library loads:
+      if (window.goog && window.goog.comments) {
+        render();
+      } else {
+        window.goog = window.goog || {};
+        window.goog.comments = window.goog.comments || {};
+        window.goog.comments.loadQueue = window.goog.comments.loadQueue || [];
+        window.goog.comments.loadQueue.push(render);
+      }
+    })();
+// ]]>
+  </script>
+<div id="comment-holder">
+
+<div id="bc_0_3C" kind="c"><div id="bc_0_3CT"><div id="bc_0_2T" class="comment-thread" kind="r" t="0" u="0"><ol id="bc_0_2TB"><li id="bc_0_0B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/photo.jpg"></div><div id="c614132145708335896" class="comment-block" il_cc1="1"><div id="bc_0_0M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/02344761832587168702">Muhammad Tariq Khan</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html?showComment=1404384974522#c614132145708335896">July 3, 2014 at 4:26 PM</a></span></div><p id="bc_0_0MC" class="comment-content">Nice post.. Good effort.</p><span id="bc_0_0MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-329803340"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=5855689509747625696&amp;postID=614132145708335896">Delete</a></span></span></div><div id="bc_0_0BR" class="comment-replies"></div><div id="bc_0_0B_box" class="comment-replybox-single"></div></li><li id="bc_0_1B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c7843920479905331854" class="comment-block" il_cc1="1"><div id="bc_0_1M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/16376109133070654680">otr214423</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html?showComment=1409987598709#c7843920479905331854">September 6, 2014 at 12:43 PM</a></span></div><p id="bc_0_1MC" class="comment-content">INTERNATIONAL CONCEPT OF WORK FROM HOME<br>Work from home theory is fast gaining popularity because of the freedom and flexibility that comes with it. Since one is not bound by fixed working hours, they can schedule their work at the time when they feel most productive and convenient to them. Women &amp; Men benefit a lot from this concept of work since they can balance their home and work perfectly. People mostly find that in this situation, their productivity is higher and stress levels lower. Those who like isolation and a tranquil work environment also tend to prefer this way of working. Today, with the kind of communication networks available, millions of people worldwide are considering this option. <br><br>Women &amp; Men who want to be independent but cannot afford to leave their responsibilities at home aside will benefit a lot from this concept of work. It makes it easier to maintain a healthy balance between home and work. The family doesn't get neglected and you can get your work done too. You can thus effectively juggle home responsibilities with your career. Working from home is definitely a viable option but it also needs a lot of hard work and discipline. You have to make a time schedule for yourself and stick to it. There will be a time frame of course for any job you take up and you have to fulfill that project within that time frame. <br><br>There are many things that can be done working from home. A few of them is listed below that will give you a general idea about the benefits of this concept. <br><br>Baby-sitting <br>This is the most common and highly preferred job that Women &amp; Men like doing. Since in today's competitive world both the parents have to work they need a secure place to leave behind their children who will take care of them and parents can also relax without being worried all the time. In this job you don't require any degree or qualifications. You only have to know how to take care of children. Parents are happy to pay handsome salary and you can also earn a lot without putting too much of an effort.<br><br>Nursery <br>For those who have a garden or an open space at your disposal and are also interested in gardening can go for this method of earning money. If given proper time and efforts nursery business can flourish very well and you will earn handsomely. But just as all jobs establishing it will be a bit difficult but the end results are outstanding.<br><br>Freelance<br>Freelance can be in different wings. Either you can be a freelance reporter or a freelance photographer. You can also do designing or be in the advertising field doing project on your own. Being independent and working independently will depend on your field of work and the availability of its worth in the market. If you like doing jewellery designing you can do that at home totally independently. You can also work on freelancing as a marketing executive working from home. Wanna know more, email us on workfromhome.otr214423@gmail.com and we will send you information on how you can actually work as a marketing freelancer.<br><br><br>Internet related work <br>This is a very vast field and here sky is the limit. All you need is a computer and Internet facility. Whatever field you are into work at home is perfect match in the software field. You can match your time according to your convenience and complete whatever projects you get. To learn more about how to work from home, contact us today on workfromhome.otr214423@gmail.comand our team will get you started on some excellent work from home projects.<br><br><br>Diet food<br>Since now a days Women &amp; Men are more conscious of the food that they eat hence they prefer to have homemade low cal food and if you can start supplying low cal food to various offices then it will be a very good source of income and not too much of efforts. You can hire a few ladies who will help you out and this can be a good business.<br><br>Thus think over this concept and go ahead. <br></p><span id="bc_0_1MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-245483770"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=5855689509747625696&amp;postID=7843920479905331854">Delete</a></span></span></div><div id="bc_0_1BR" class="comment-replies"></div><div id="bc_0_1B_box" class="comment-replybox-single"></div></li></ol><div id="bc_0_2I" class="continue" kind="ci" style="display: none;"><a href="javascript:;" target="_self">Add comment</a></div><div id="bc_0_2T_box" class="comment-replybox-thread"><iframe allowtransparency="true" class="blogger-iframe-colorize blogger-comment-from-post" frameborder="0" height="196px" id="comment-editor" name="comment-editor" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/comment-iframe.html" width="100%" data-resized="true" style="display: block;"></iframe></div><div id="bc_0_2L" class="loadmore loaded" kind="rb"><a href="javascript:;" target="_self">Load more...</a></div></div></div></div></div>
+</div>
+<p class="comment-footer">
+</p><div class="comment-form" il_cc1="1">
+<a name="comment-form"></a>
+<p>
+</p>
+<a href="https://www.blogger.com/comment-iframe.g?blogID=5855689509747625696&amp;postID=2580782112341030743&amp;blogspotRpcToken=6755103" id="comment-editor-src"></a>
+
+<script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/1930376684-comment_from_post_iframe.js" type="text/javascript"></script>
+<script type="text/javascript">
+      BLOG_CMT_createIframe('https://www.blogger.com/rpc_relay.html');
+    </script>
+</div>
+<p></p>
+<div id="backlinks-container">
+<div id="Blog1_backlinks-container">
+</div>
+</div>
+</div>
+</div>
+
+        </div></div>
+      
+</div>
+<div class="blog-pager" id="blog-pager">
+<span id="blog-pager-newer-link">
+<a class="blog-pager-newer-link" href="http://java-latte.blogspot.in/2014/05/Oracle-Nashorn-JavaScript-Engine-Java-8.html" id="Blog1_blog-pager-newer-link" title="Newer Post">Newer Post</a>
+</span>
+<span id="blog-pager-older-link">
+<a class="blog-pager-older-link" href="http://java-latte.blogspot.in/2014/04/Oracle-Java-Certification-1Z0-804-1Z0-803.html" id="Blog1_blog-pager-older-link" title="Older Post">Older Post</a>
+</span>
+<a class="home-link" href="http://java-latte.blogspot.in/">Home</a>
+</div>
+<div class="clear"></div>
+<div class="post-feeds">
+<div class="feed-links">
+Subscribe to:
+<a class="feed-link" href="http://java-latte.blogspot.com/feeds/2580782112341030743/comments/default" target="_blank" type="application/atom+xml">Post Comments (Atom)</a>
+</div>
+</div>
+<script type="text/javascript">
+    window.___gcfg = { 'lang': 'en' };
+  </script>
+</div></div>
+</div>
+</div>
+<div class="column-left-outer">
+<div class="column-left-inner">
+<aside>
+</aside>
+</div>
+</div>
+<div class="column-right-outer">
+<div class="column-right-inner">
+<aside>
+<div class="sidebar section" id="sidebar-right-1"><div class="widget PlusBadge" data-version="1" id="PlusBadge2">
+<script type="text/javascript">
+  window.___gcfg = {
+    lang: 'en'
+  };
+  </script>
+<h2 class="title">Java-Latte+ Badge</h2>
+<div id="___person_0" style="text-indent: 0px; margin: 0px; padding: 0px; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 273px; height: 106px; background: transparent;"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 273px; margin: 0px; border-style: none; left: 0px; height: 106px;" tabindex="0" vspace="0" width="100%" id="I1_1511849221843" name="I1_1511849221843" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/person.html" data-gapiattached="true" title="+Badge"></iframe></div>
+</div><div class="widget BlogSearch" data-version="1" id="BlogSearch1">
+<h2 class="title">Looking for something?</h2>
+<div class="widget-content">
+<div id="BlogSearch1_form">
+<form action="http://java-latte.blogspot.in/search" class="gsc-search-box" target="_top">
+<table cellpadding="0" cellspacing="0" class="gsc-search-box">
+<tbody>
+<tr>
+<td class="gsc-input">
+<input autocomplete="off" class="gsc-input" name="q" size="10" title="search" type="text" value="">
+</td>
+<td class="gsc-search-button">
+<input class="gsc-search-button" title="search" type="submit" value="Search">
+</td>
+</tr>
+</tbody>
+</table>
+</form>
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=BlogSearch&amp;widgetId=BlogSearch1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;BlogSearch1&quot;));" target="configBlogSearch1" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget BlogArchive" data-version="1" id="BlogArchive1">
+<h2>Blog Archive</h2>
+<div class="widget-content">
+<div id="ArchiveList">
+<div id="BlogArchive1_ArchiveList">
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2015/">
+2015
+</a>
+<span class="post-count" dir="ltr">(12)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2015/08/">
+August
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2015/07/">
+July
+</a>
+<span class="post-count" dir="ltr">(4)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2015/04/">
+April
+</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2015/03/">
+March
+</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2015/02/">
+February
+</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">
+
+        ▼&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/">
+2014
+</a>
+<span class="post-count" dir="ltr">(57)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/12/">
+December
+</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/11/">
+November
+</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/10/">
+October
+</a>
+<span class="post-count" dir="ltr">(8)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/09/">
+September
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/08/">
+August
+</a>
+<span class="post-count" dir="ltr">(4)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/07/">
+July
+</a>
+<span class="post-count" dir="ltr">(7)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/06/">
+June
+</a>
+<span class="post-count" dir="ltr">(11)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/05/">
+May
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">
+
+        ▼&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/04/">
+April
+</a>
+<span class="post-count" dir="ltr">(4)</span>
+<ul class="posts">
+<li><a href="http://java-latte.blogspot.in/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html">Parallel Fork/Join Framework In Java</a></li>
+<li><a href="http://java-latte.blogspot.in/2014/04/Oracle-Java-Certification-1Z0-804-1Z0-803.html">Preparation for Java Programmer Language Certifica...</a></li>
+<li><a href="http://java-latte.blogspot.in/2014/04/TimeUnit-Enum-in-Java-Concurrency.html">TimeUnit Enum in Java</a></li>
+<li><a href="http://java-latte.blogspot.in/2014/04/Semaphore-CountDownLatch-CyclicBarrier-Phaser-Exchanger-in-Java.html">Five Synchronizers in Java</a></li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/03/">
+March
+</a>
+<span class="post-count" dir="ltr">(6)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/02/">
+February
+</a>
+<span class="post-count" dir="ltr">(5)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2014/01/">
+January
+</a>
+<span class="post-count" dir="ltr">(6)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/">
+2013
+</a>
+<span class="post-count" dir="ltr">(55)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/12/">
+December
+</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/11/">
+November
+</a>
+<span class="post-count" dir="ltr">(6)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/10/">
+October
+</a>
+<span class="post-count" dir="ltr">(12)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/09/">
+September
+</a>
+<span class="post-count" dir="ltr">(5)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/08/">
+August
+</a>
+<span class="post-count" dir="ltr">(8)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/07/">
+July
+</a>
+<span class="post-count" dir="ltr">(4)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/06/">
+June
+</a>
+<span class="post-count" dir="ltr">(6)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/05/">
+May
+</a>
+<span class="post-count" dir="ltr">(4)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/04/">
+April
+</a>
+<span class="post-count" dir="ltr">(2)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/03/">
+March
+</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2013/01/">
+January
+</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2012/">
+2012
+</a>
+<span class="post-count" dir="ltr">(15)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2012/11/">
+November
+</a>
+<span class="post-count" dir="ltr">(11)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2012/10/">
+October
+</a>
+<span class="post-count" dir="ltr">(3)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://java-latte.blogspot.in/2012/09/">
+September
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=BlogArchive&amp;widgetId=BlogArchive1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;BlogArchive1&quot;));" target="configBlogArchive1" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget HTML" data-version="1" id="HTML4">
+<div class="widget-content">
+<script type="text/javascript" src="http://ads.qadservice.com/t?id=1612bdcb-e64a-4ade-ba82-41af01207288&amp;size=300x250"></script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML4&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML4&quot;));" target="configHTML4" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget HTML" data-version="1" id="HTML6">
+<div class="widget-content">
+<script type="text/javascript" src="http://ads.qadservice.com/t?id=82b80996-f000-4744-8d34-8bfb75a3dfee&amp;size=300x250"></script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML6&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML6&quot;));" target="configHTML6" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget HTML" data-version="1" id="HTML2">
+<h2 class="title">linkedin</h2>
+<div class="widget-content">
+<a href="http://in.linkedin.com/pub/pardeep-kumar/34/b0b/95b">
+      
+          <img src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/btn_myprofile_160x33.png" width="160" height="33" border="0" alt="View Pardeep Kumar&#39;s profile on LinkedIn">
+        
+    </a>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML2&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML2&quot;));" target="configHTML2" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget LinkList" data-version="1" id="LinkList1">
+<h2>Connect me</h2>
+<div class="widget-content">
+<ul>
+<li><a href="https://plus.google.com/u/0/communities/106222208505735148943">Follow on Google+</a></li>
+<li><a href="https://www.facebook.com/myjavalatte">Follow on Facebook</a></li>
+<li><a href="http://www.linkedin.com/groups/javalatte-4790114?home=&amp;gid=4790114&amp;trk=anet_ug_hm">Follow on Linkedin</a></li>
+<li><a href="http://www.myjavalatte.wordpress.com/">Follow on WordPress</a></li>
+<li><a href="https://twitter.com/myjavalatte">Follow on Twitter</a></li>
+<li><a href="http://java-latte.tumblr.com/">Follow on Tumblr</a></li>
+</ul>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=LinkList&amp;widgetId=LinkList1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;LinkList1&quot;));" target="configLinkList1" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget HTML" data-version="1" id="HTML5">
+<div class="widget-content">
+<script type="text/javascript">
+	 var infolink_pid=1839981;
+	var infolink_wsid = 0;
+	</script>
+<script type="text/javascript" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/infolinks_main.js">
+</script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML5&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML5&quot;));" target="configHTML5" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+<table border="0" cellpadding="0" cellspacing="0" class="section-columns columns-2">
+<tbody>
+<tr>
+<td class="first columns-cell">
+<div class="sidebar section" id="sidebar-right-2-1"><div class="widget Followers" data-version="1" id="Followers1">
+<h2 class="title">Subscriber of this blog</h2>
+<div class="widget-content">
+<div id="Followers1-wrapper">
+<div style="margin-right:2px;">
+<div><script type="text/javascript" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/plusone.js" gapi_processed="true"></script>
+<div id="followers-iframe-container"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" tabindex="0" vspace="0" width="100%" id="I0_1511849267656" name="I0_1511849267656" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/followers.html" height="342"></iframe></div>
+<script type="text/javascript">
+    window.followersIframe = null;
+    function followersIframeOpen(url) {
+      gapi.load("gapi.iframes", function() {
+        if (gapi.iframes && gapi.iframes.getContext) {
+          window.followersIframe = gapi.iframes.getContext().openChild({
+            url: url,
+            where: document.getElementById("followers-iframe-container"),
+            messageHandlersFilter: gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER,
+            messageHandlers: {
+              '_ready': function(obj) {
+                window.followersIframe.getIframeEl().height = obj.height;
+              },
+              'reset': function() {
+                window.followersIframe.close();
+                followersIframeOpen("https://www.blogger.com/followers.g?blogID\x3d5855689509747625696\x26colors\x3dCgt0cmFuc3BhcmVudBILdHJhbnNwYXJlbnQaByMwMDAwMDAiByMxODM5NjMqByNlMWUxZTEyByMwMDAwMDA6ByMwMDAwMDBCByMxODM5NjNKByM2MjIzOTRSByMxODM5NjNaC3RyYW5zcGFyZW50\x26pageSize\x3d21\x26postID\x3d2580782112341030743\x26origin\x3dhttp://java-latte.blogspot.in/");
+              },
+              'open': function(url) {
+                window.followersIframe.close();
+                followersIframeOpen(url);
+              },
+              'blogger-ping': function() {
+              }
+            }
+          });
+        }
+      });
+    }
+    followersIframeOpen("https://www.blogger.com/followers.g?blogID\x3d5855689509747625696\x26colors\x3dCgt0cmFuc3BhcmVudBILdHJhbnNwYXJlbnQaByMwMDAwMDAiByMxODM5NjMqByNlMWUxZTEyByMwMDAwMDA6ByMwMDAwMDBCByMxODM5NjNKByM2MjIzOTRSByMxODM5NjNaC3RyYW5zcGFyZW50\x26pageSize\x3d21\x26postID\x3d2580782112341030743\x26origin\x3dhttp://java-latte.blogspot.in/");
+  </script></div>
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=Followers&amp;widgetId=Followers1&amp;action=editWidget&amp;sectionId=sidebar-right-2-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Followers1&quot;));" target="configFollowers1" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget HTML" data-version="1" id="HTML10">
+<div class="widget-content">
+<script type="text/javascript" src="http://ads.qadservice.com/t?id=c64c3ecf-564c-4e69-8e09-f60bd3d03eab&amp;size=120x600"></script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML10&amp;action=editWidget&amp;sectionId=sidebar-right-2-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML10&quot;));" target="configHTML10" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget HTML" data-version="1" id="HTML7">
+<div class="widget-content">
+<script type="text/javascript" src="http://ads.qadserve.com/t?id=c64c3ecf-564c-4e69-8e09-f60bd3d03eab&amp;size=120x600"></script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML7&amp;action=editWidget&amp;sectionId=sidebar-right-2-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML7&quot;));" target="configHTML7" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</td>
+<td class="columns-cell">
+<div class="sidebar section" id="sidebar-right-2-2"><div class="widget HTML" data-version="1" id="HTML1">
+<h2 class="title">Follower on Facebook</h2>
+<div class="widget-content">
+<span style="font-weight:bold;"></span><!-- Facebook Badge START --><a href="https://www.facebook.com/myjavalatte" target="_TOP" style="font-family: &quot;lucida grande&quot;,tahoma,verdana,arial,sans-serif; font-size: 11px; font-variant: normal; font-style: normal; font-weight: normal; color: #3B5998; text-decoration: none;" title="Java-Latte">Java-Latte</a><br><a href="https://www.facebook.com/myjavalatte" target="_TOP" title="Java-Latte"><img src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/177274735690777.1625.1609534840.png" style="border: 0px;"></a><br><a href="http://www.facebook.com/business/dashboard/" target="_TOP" style="font-family: &quot;lucida grande&quot;,tahoma,verdana,arial,sans-serif; font-size: 11px; font-variant: normal; font-style: normal; font-weight: normal; color: #3B5998; text-decoration: none;" title="Make your own badge!">Promote your Page too</a><!-- Facebook Badge END -->
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML1&amp;action=editWidget&amp;sectionId=sidebar-right-2-2" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML1&quot;));" target="configHTML1" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget HTML" data-version="1" id="HTML11">
+<div class="widget-content">
+<script type="text/javascript" src="http://ads.qadservice.com/t?id=2bd489bc-7a3a-4e0a-9425-765bb516e8f6&amp;size=120x600"></script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML11&amp;action=editWidget&amp;sectionId=sidebar-right-2-2" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML11&quot;));" target="configHTML11" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget HTML" data-version="1" id="HTML8">
+<div class="widget-content">
+<script type="text/javascript" src="http://ads.qadserve.com/t?id=3aaa7ccc-3437-48d4-8b5f-a6cfabb5b012&amp;size=120x600"></script>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=HTML&amp;widgetId=HTML8&amp;action=editWidget&amp;sectionId=sidebar-right-2-2" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;HTML8&quot;));" target="configHTML8" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sidebar no-items section" id="sidebar-right-3"></div>
+</aside>
+</div>
+</div>
+</div>
+<div style="clear: both"></div>
+<!-- columns -->
+</div>
+<!-- main -->
+</div>
+</div>
+<div class="main-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<footer>
+<div class="footer-outer">
+<div class="footer-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left footer-fauxborder-left">
+<div class="fauxborder-right footer-fauxborder-right"></div>
+<div class="region-inner footer-inner">
+<div class="foot no-items section" id="footer-1"></div>
+<!-- outside of the include in order to lock Attribution widget -->
+<div class="foot section" id="footer-3"><div class="widget Attribution" data-version="1" id="Attribution1">
+<div class="widget-content" style="text-align: center;">
+copyright 2014 @Java-Latte. Awesome Inc. theme. Theme images by <a href="http://www.istockphoto.com/googleimages.php?id=357703&amp;platform=blogger&amp;langregion=en" target="_blank">hdoddema</a>. Powered by <a href="https://www.blogger.com/" target="_blank">Blogger</a>.
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=5855689509747625696&amp;widgetType=Attribution&amp;widgetId=Attribution1&amp;action=editWidget&amp;sectionId=footer-3" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Attribution1&quot;));" target="configAttribution1" title="Edit">
+<img alt="" height="18" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</div>
+</div>
+<div class="footer-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</footer>
+<!-- content -->
+</div>
+</div>
+<div class="content-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div><iframe width="1px" height="1px" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/user_sync.html" style="display: none;"></iframe><img src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/getuid" width="0" height="0" style="display: none;"><iframe width="1px" height="1px" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/usersyncup-an.html" style="display: none;"></iframe>
+<script type="text/javascript">
+    window.setTimeout(function() {
+        document.body.className = document.body.className.replace('loading', '');
+      }, 10);
+  </script>
+<script src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/plusone.js" type="text/javascript" gapi_processed="true"></script>
+
+<script type="text/javascript" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/3577707566-widgets.js"></script>
+<script type="text/javascript">
+window['__wavt'] = 'AOuZoY6OT9jq5V8V8txTGXlJKYmglxxwIw:1511849176068';_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d5855689509747625696','//java-latte.blogspot.in/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html','5855689509747625696');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '5855689509747625696', 'title': 'Java-Latte', 'url': 'http://java-latte.blogspot.in/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html', 'canonicalUrl': 'http://java-latte.blogspot.com/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html', 'homepageUrl': 'http://java-latte.blogspot.in/', 'searchUrl': 'http://java-latte.blogspot.in/search', 'canonicalHomepageUrl': 'http://java-latte.blogspot.com/', 'blogspotFaviconUrl': 'http://java-latte.blogspot.in/favicon.ico', 'bloggerUrl': 'https://www.blogger.com', 'hasCustomDomain': false, 'httpsEnabled': true, 'enabledCommentProfileImages': true, 'gPlusViewType': 'FILTERED_POSTMOD', 'adultContent': false, 'analyticsAccountNumber': '', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'languageDirection': 'ltr', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': false, 'mobileClass': '', 'isPrivateBlog': false, 'feedLinks': '\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Java-Latte - Atom\x22 href\x3d\x22http://java-latte.blogspot.com/feeds/posts/default\x22 /\x3e\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/rss+xml\x22 title\x3d\x22Java-Latte - RSS\x22 href\x3d\x22http://java-latte.blogspot.com/feeds/posts/default?alt\x3drss\x22 /\x3e\n\x3clink rel\x3d\x22service.post\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Java-Latte - Atom\x22 href\x3d\x22https://www.blogger.com/feeds/5855689509747625696/posts/default\x22 /\x3e\n\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Java-Latte - Atom\x22 href\x3d\x22http://java-latte.blogspot.com/feeds/2580782112341030743/comments/default\x22 /\x3e\n', 'meTag': '', 'openIdOpTag': '', 'adsenseClientId': 'ca-pub-4919667189817196', 'adsenseHostId': 'ca-host-pub-1556223355139109', 'adsenseHasAds': false, 'ieCssRetrofitLinks': '\x3c!--[if IE]\x3e\x3cscript type\x3d\x22text/javascript\x22 src\x3d\x22https://www.blogger.com/static/v1/jsbin/771816573-ieretrofit.js\x22\x3e\x3c/script\x3e\n\x3c![endif]--\x3e', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/5e49a9bcd60ebb33', 'plusOneApiSrc': 'https://apis.google.com/js/plusone.js', 'sharing': {'platforms': [{'name': 'Get link', 'key': 'link', 'shareMessage': 'Get link', 'target': ''}, {'name': 'Facebook', 'key': 'facebook', 'shareMessage': 'Share to Facebook', 'target': 'facebook'}, {'name': 'BlogThis!', 'key': 'blogThis', 'shareMessage': 'BlogThis!', 'target': 'blog'}, {'name': 'Twitter', 'key': 'twitter', 'shareMessage': 'Share to Twitter', 'target': 'twitter'}, {'name': 'Pinterest', 'key': 'pinterest', 'shareMessage': 'Share to Pinterest', 'target': 'pinterest'}, {'name': 'Google+', 'key': 'googlePlus', 'shareMessage': 'Share to Google+', 'target': 'googleplus'}, {'name': 'Email', 'key': 'email', 'shareMessage': 'Email', 'target': 'email'}], 'googlePlusShareButtonWidth': 300, 'googlePlusBootstrap': '\x3cscript type\x3d\x22text/javascript\x22\x3ewindow.___gcfg \x3d {\x27lang\x27: \x27en\x27};\x3c/script\x3e'}, 'hasCustomJumpLinkMessage': false, 'jumpLinkMessage': 'Read more', 'pageType': 'item', 'postId': '2580782112341030743', 'postImageThumbnailUrl': 'http://4.bp.blogspot.com/-KalwxIiNv58/U15G4PY21GI/AAAAAAAAFWg/gmuKJE3WA7w/s72-c/360e2996666f354fdcc81efaead85212.jpg', 'postImageUrl': 'http://4.bp.blogspot.com/-KalwxIiNv58/U15G4PY21GI/AAAAAAAAFWg/gmuKJE3WA7w/s1600/360e2996666f354fdcc81efaead85212.jpg', 'pageName': 'Parallel Fork/Join Framework In Java ', 'pageTitle': 'Java-Latte: Parallel Fork/Join Framework In Java '}}, {'name': 'features', 'data': {'lazy_images': 'false', 'unsupported_browser_message': 'false', 'lightbox_img_parsing': 'true', 'video_theatre_support': 'true', 'sharing_get_link_dialog': 'false', 'sharing_native': 'false'}}, {'name': 'messages', 'data': {'edit': 'Edit', 'linkCopiedToClipboard': 'Link copied to clipboard!', 'ok': 'Ok', 'postLink': 'Post Link'}}, {'name': 'template', 'data': {'name': 'custom', 'localizedName': 'Custom', 'isResponsive': false, 'isAlternateRendering': false, 'isCustom': true, 'variant': 'light', 'variantId': 'light'}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\x3dclassic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\x3dflipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\x3dmagazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\x3dmosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\x3dsidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\x3dsnapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\x3dtimeslide'}, 'isMobile': false, 'title': 'Parallel Fork/Join Framework In Java ', 'description': '  Multicore processors are now widespread across server, desktop, and laptop hardware even on smaller devices such as&#160;small-phones&#160;and table...', 'featuredImage': 'http://4.bp.blogspot.com/-KalwxIiNv58/U15G4PY21GI/AAAAAAAAFWg/gmuKJE3WA7w/s1600/360e2996666f354fdcc81efaead85212.jpg', 'url': 'http://java-latte.blogspot.in/2014/04/Fork-Join-Framework-parallel-processing-with-example-in-Java.html', 'type': 'item', 'isSingleItem': true, 'isMultipleItems': false, 'isError': false, 'isPage': false, 'isPost': true, 'isHomepage': false, 'isArchive': false, 'isLabelSearch': false, 'postId': 2580782112341030743}}]);
+_WidgetManager._RegisterWidget('_NavbarView', new _WidgetInfo('Navbar1', 'navbar', null, document.getElementById('Navbar1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'header', null, document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML9', 'header-right', null, document.getElementById('HTML9'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_PageListView', new _WidgetInfo('PageList1', 'crosscol', null, document.getElementById('PageList1'), {'title': 'Pages', 'links': [{'isCurrentPage': false, 'href': 'http://java-latte.blogspot.in/', 'title': 'Home'}, {'isCurrentPage': false, 'href': 'http://java-latte.blogspot.in/p/java-8.html', 'id': '4714476257785853598', 'title': 'Java 8'}, {'isCurrentPage': false, 'href': 'http://java-latte.blogspot.in/p/coding.html', 'id': '7036983147737525889', 'title': 'Algorithm Puzzles'}, {'isCurrentPage': false, 'href': 'http://java-latte.blogspot.in/p/concurrency.html', 'id': '5121347418700259130', 'title': 'Concurrency/Multi-threading'}, {'isCurrentPage': false, 'href': 'http://java-latte.blogspot.in/p/java-puzzles.html', 'id': '7722878507253566160', 'title': 'Java Puzzles'}], 'mobile': false}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'main', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'useNgc': false, 'lightboxEnabled': true, 'lightboxModuleUrl': 'https://www.blogger.com/static/v1/jsbin/1219124111-lbx.js', 'lightboxCssUrl': 'https://www.blogger.com/static/v1/v-css/368954415-lightbox_bundle.css'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_PlusBadgeView', new _WidgetInfo('PlusBadge2', 'sidebar-right-1', null, document.getElementById('PlusBadge2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogSearchView', new _WidgetInfo('BlogSearch1', 'sidebar-right-1', null, document.getElementById('BlogSearch1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar-right-1', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr', 'loadingMessage': 'Loading\x26hellip;'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML4', 'sidebar-right-1', null, document.getElementById('HTML4'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML6', 'sidebar-right-1', null, document.getElementById('HTML6'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML2', 'sidebar-right-1', null, document.getElementById('HTML2'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_LinkListView', new _WidgetInfo('LinkList1', 'sidebar-right-1', null, document.getElementById('LinkList1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML5', 'sidebar-right-1', null, document.getElementById('HTML5'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_FollowersView', new _WidgetInfo('Followers1', 'sidebar-right-2-1', null, document.getElementById('Followers1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML10', 'sidebar-right-2-1', null, document.getElementById('HTML10'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML7', 'sidebar-right-2-1', null, document.getElementById('HTML7'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1', 'sidebar-right-2-2', null, document.getElementById('HTML1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML11', 'sidebar-right-2-2', null, document.getElementById('HTML11'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML8', 'sidebar-right-2-2', null, document.getElementById('HTML8'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AttributionView', new _WidgetInfo('Attribution1', 'footer-3', null, document.getElementById('Attribution1'), {}, 'displayModeFull'));
+</script>
+
+<iframe name="oauth2relay442269481" id="oauth2relay442269481" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/postmessageRelay.html" tabindex="-1" aria-hidden="true" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><script type="text/javascript" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/quantcast.js"></script><link type="text/css" rel="stylesheet" href="./Java-Latte_ Parallel Fork_Join Framework In Java_files/368954415-lightbox_bundle.css"><script type="text/javascript" src="./Java-Latte_ Parallel Fork_Join Framework In Java_files/1219124111-lbx.js"></script></body></html>
