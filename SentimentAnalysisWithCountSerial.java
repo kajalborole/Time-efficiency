@@ -5,9 +5,10 @@
  */
 //package com.mycompany.twitter.sentiments;
 // Uses Naive Bayes algorithm for sentiment classification  -Serial
+
 import java.sql.*;
 import java.io.BufferedWriter;
-//import java.io.FileInputStream;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,28 +17,29 @@ import opennlp.tools.doccat.DoccatFactory ;
 import opennlp.tools.doccat.DoccatModel;
 import opennlp.tools.doccat.DocumentCategorizerME;
 import opennlp.tools.doccat.DocumentSampleStream;
-
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.TrainingParameters ;
+
 import opennlp.tools.util.*;
 import opennlp.tools.ml.naivebayes.*; // NaiveBayesTrainer class
-//import twitter4j.Query;
-//import twitter4j.QueryResult;
-//import twitter4j.Status;
-//import twitter4j.Twitter;
+
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.Status;
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
-//import twitter4j.TwitterFactory;
-//import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-//import java.util.Date;
+import java.util.Date;
 import java.util.Vector;
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author milind
@@ -57,16 +59,8 @@ ResultSet rs;
      int totalLines = 0; 
      static int sadness =1 ,worry=2,hate=3,love=4,fun=5,surprise=6,enthusiasm=7,neutral=8,happiness=9,empty=10;
 
-       int posCat[] = {4,5,6,7,9} ;
-     int negCat[] = { 1,2,3} ; // for testing leave 10 (empty) and 8 -Neutral categories 
-     
-    String categoryName = ""; // positive and negative 
- 
-    int tp =0 ,tn=0,fp=0,fn=0 ;
-    double precision = 0.0,recall =0.0, accuracy = 0.0 ;
-        
     static SentimentAnalysisWithCountSerial twitterCategorizer ;
-    Vector v1,trainTweet,trainScore ; 
+    Vector v1 ; 
     long trainEndTime = 0;
     
     SentimentAnalysisWithCountSerial()
@@ -135,14 +129,13 @@ Query query = new Query("demonetisation");
    
         
         
-         long starttesttime = System.currentTimeMillis();
-        System.out.println("Testing started at : " + starttesttime);
+         long testprev = System.nanoTime();
+        System.out.println("Testing started at : " + testprev)        ;
                 
         twitterCategorizer.testModel();
-        long endtesttime= System.currentTimeMillis();
-        System.out.println("Testing end at:"+endtesttime);  
-         long endTime = (endtesttime - starttesttime) ;
-         System.out.println("Total execution time taken ,for testing ( in ms : "+endTime);
+
+         long endTime = (System.nanoTime() - testprev) ;
+         System.out.println("Total execution time taken ,for testing ( in nano.seconds : "+endTime);
          
          twitterCategorizer.saveToDB(endTime) ;
 
@@ -177,66 +170,19 @@ Query query = new Query("demonetisation");
 
         try
         {
-            
-        String line = "";
-   
-        //load tweets from training file - trainingDataThou.txt
-        
-        FileReader fr = new FileReader("train.txt") ;
-        BufferedReader br = new BufferedReader(fr) ;
-        
-        String lineT = ""; 
-         trainTweet = new Vector(1000) ;
-         trainScore = new Vector(1000) ;
-         
-        while((lineT=br.readLine()) != null)
-        {
-                 trainTweet.add(lineT.substring(lineT.indexOf("\t")+1)) ; 
-                 trainScore.add(lineT.substring(0,lineT.indexOf("\t"))) ; 
-                  
-        }
-        System.out.println("Total training tweets : " + trainTweet.size()) ; 
-            
-        int scoreActual=0; 
-        String catActual = "" ,machineActual = "";  
                  // Load tweets from files in memory
-      //  FileReader fr = new FileReader("text_emotion.csv");
-         fr = new FileReader("test.txt");
-         br = new BufferedReader(fr);
+        FileReader fr = new FileReader("text_emotion.csv");
+        BufferedReader br = new BufferedReader(fr);
      
         int result1 =0 ;
 
-       //String line = "";
+        String line = "";
 
        while((line = br.readLine()) != null)
         {
 	//result1 = twitterCategorizer.classifyNewTweet(line);
                totalLines++;
                 result1 = classifyNewTweet(line);
-                
-                 scoreActual = search(line) ; 
-                System.out.println("ScoreActual :"  + scoreActual) ;
-                //result1 - Tweet score given by machine i.e machineActual 
-                
-                //now find categories of both 
-                //if(scoreActual != 10 && scoreActual != 8)
-                if(scoreActual != 0)
-                {
-                catActual = findCategory(scoreActual) ;
-                machineActual = findCategory(result1) ;
-                
-                System.out.println("cat actual " + catActual +" machineActual = " + machineActual) ;
-                
-                if(catActual.equals("yes") && machineActual.equals("yes"))
-                    tp++ ;
-                else  if(catActual.equals("yes") && machineActual.equals("no"))
-                    fn++ ;
-                else  if(catActual.equals("no") && machineActual.equals("yes"))
-                    fp++ ;
-                else  if(catActual.equals("no") && machineActual.equals("no"))
-                    tn++ ;
-                } 
-                
 	if(result1 ==1)  sadness++ ;
 	else if(result1 == 2) worry++;
 	else if(result1 == 3) hate++;
@@ -249,24 +195,6 @@ Query query = new Query("demonetisation");
 	else if(result1 == 10) empty++;
 
             }
-        System.out.println("tp="+tp+"\ntn="+tn);
-        System.out.println("fp="+fp+"\nfn="+fn);
-                precision = (double)tp /(double) (tp+fp) ;
-                precision = precision * 100 ;
-                
-                recall = (double)tp / (double)( tp + fn) ;
-                recall = recall * 100 ;
-                
-                accuracy = (double)(tp + tn) /(double) ( tp + tn + fp+fn) ;
-                accuracy = accuracy * 100; 
-                
-                double F1score = 2 * precision * recall / ( precision + recall) ;
-                
-                System.out.println("Precision is : " + precision) ;
-                System.out.println("Recall is : " + recall) ;
-                System.out.println("Accuracy is : " + accuracy) ;
-                System.out.println("F1-score : " + F1score) ;
-                  
         }
         catch(Exception e)
         {
@@ -275,39 +203,7 @@ Query query = new Query("demonetisation");
 
     }
     
-     /**
-     * Searches a tweet from training file and returns its actual score
-     */
-    public int search(String line)
-    {
-        String tweet = ""; 
-        int scoreActual = 0; 
-        for(int i=0;i<trainTweet.size();i++)
-        {
-            tweet = (String)trainTweet.elementAt(i) ;
-            tweet = tweet.trim() ;
-            line = line.trim() ;
-            if(line.equalsIgnoreCase(tweet))        
-            {
-                scoreActual = Integer.parseInt((String)trainScore.elementAt(i)) ;
-                break ;
-            }
-        }
-        return scoreActual ; 
-    }
-    /**
-      * Finds whether a tweet belongs to positive cat or negative cat 
-      */
-     public String findCategory(int score)
-     {
-        //  Arrays.sort(negCat);
-          int indx = Arrays.binarySearch(negCat,score)  ; 
-          if(indx > 0 )
-              categoryName = "no"   ;
-          else
-              categoryName = "yes" ; 
-          return categoryName ; 
-     }
+    
     /**
      * Saves data to DB
      */
@@ -320,7 +216,7 @@ Query query = new Query("demonetisation");
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd") ;
             String dt = fmt.format(d) ;
             ps.setInt(1,totalLines) ;
-            ps.setLong(2,(totalTime) +trainEndTime);
+            ps.setLong(2,(totalTime/1000000) +trainEndTime);
         
             ps.setDate(3,java.sql.Date.valueOf(dt));
             ps.setString(4,"Serial");
@@ -340,7 +236,7 @@ Query query = new Query("demonetisation");
         try {
             //dataIn = new FileInputStream("training_data1.txt");
 
-            MarkableFileInputStreamFactory factory = new MarkableFileInputStreamFactory(new File("train.txt")) ; // training_data1.txt
+            MarkableFileInputStreamFactory factory = new MarkableFileInputStreamFactory(new File("training_data1.txt")) ;
 
             //ObjectStream lineStream = new PlainTextByLineStream(dataIn, "UTF-8");
             ObjectStream lineStream = new PlainTextByLineStream(factory, "UTF-8");
